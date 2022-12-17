@@ -1,0 +1,10 @@
+version: '3.3'
+services:
+    speedtest-tracker:
+        container_name: speedtest-tracker
+        ports:
+            - '8081:80'
+        volumes:
+            - './conf:/config'
+        image: 'ghcr.io/alexjustesen/speedtest-tracker:latest'
+        restart: unless-stopped
