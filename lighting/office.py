@@ -159,7 +159,7 @@ def late():
 
     for f in dmx.get_fixtures_by_name_include('Desk'):
         f.color(Colors.Warm, fade_time)
-        f.dim(int(255 * 0.75), fade_time)
+        f.dim(255, fade_time)
 
     books = dmx.get_fixtures_by_name_include('Books')
     for f in books:
