@@ -8,13 +8,13 @@
     {
         "type": "Stairville.LED_Par_36",
         "args": [],
-        "name": "S1 Shelving Unit",
+        "name": "S1 Books 1",
         "start_channel": 8
     },
     {
         "type": "Stairville.LED_Par_36",
         "args": [],
-        "name": "S2 Board Right",
+        "name": "S2 Books 2",
         "start_channel": 13
     },
     {
@@ -24,38 +24,38 @@
         "start_channel": 18
     },
     {
-        "type": "funGeneration.LED_Pot_12_RGBW",
+        "type": "Stairville.LED_Par_36",
         "args": [],
-        "name": "F1 Shelf Left",
-        "mode": 8,
+        "name": "S4 Board",
         "start_channel": 23
     },
     {
         "type": "funGeneration.LED_Pot_12_RGBW",
         "args": [],
-        "name": "F2 Shelf Right",
+        "name": "F1 Shelf 1",
         "mode": 8,
-        "start_channel": 31
+        "start_channel": 28
     },
     {
         "type": "funGeneration.LED_Pot_12_RGBW",
         "args": [],
-        "name": "F3 Desk Right",
+        "name": "F2 Shelf 2",
         "mode": 8,
-        "start_channel": 39
+        "start_channel": 36
     },
     {
         "type": "funGeneration.LED_Pot_12_RGBW",
         "args": [],
-        "name": "F4 Desk Left",
+        "name": "F3 Shelf 3",
         "mode": 8,
-        "start_channel": 47
+        "start_channel": 44
     },
     {
-        "type": "Stairville.LED_Par_36",
+        "type": "funGeneration.LED_Pot_12_RGBW",
         "args": [],
-        "name": "S4 Books",
-        "start_channel": 55
+        "name": "F4 Desk",
+        "mode": 8,
+        "start_channel": 52
     },
     {
         "type": "Lixada.LED_Mini_Par",
