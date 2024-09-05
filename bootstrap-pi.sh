@@ -47,12 +47,12 @@ npm link
 cd ~/
 
 # Enable and expose home automation lighting
-cd ~/home-automation/lighting
-sudo systemctl enable "$PWD/lighting.service"
-sudo systemctl start lighting.service
-sudo systemctl status lighting.service
+# cd ~/home-automation/lighting
+# sudo systemctl enable "$PWD/lighting.service"
+# sudo systemctl start lighting.service
+# sudo systemctl status lighting.service
 sudo ufw allow 8000
-cd ~/
+# cd ~/
 
 # Enable and expose home automation speedtest
 cd ~/home-automation/speedtest
