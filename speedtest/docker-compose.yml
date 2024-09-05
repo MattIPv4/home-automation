@@ -1,10 +1,14 @@
-version: '3.3'
 services:
     speedtest-tracker:
         container_name: speedtest-tracker
         ports:
-            - '8081:80'
+            - '8080:80'
         volumes:
             - './conf:/config'
-        image: 'ghcr.io/alexjustesen/speedtest-tracker:latest'
+        environment:
+            - 'APP_KEY=base64:ZNkctVtIJfrrXpn+Ne4Q0DFSj/COVaredhhaLnDQ+5s='
+            - 'DISPLAY_TIMEZONE=Europe/London'
+            - 'SPEEDTEST_SCHEDULE=*/15 * * * *'
+            - 'PUBLIC_DASHBOARD=true'
+        image: 'lscr.io/linuxserver/speedtest-tracker:latest'
         restart: unless-stopped

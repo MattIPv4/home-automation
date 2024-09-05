@@ -270,7 +270,7 @@ callbacks = {
     "divoom-off": divoom_off,
     "divoom-on": divoom_on,
 }
-dmx.web_control(callbacks=callbacks)
+dmx.web_control(callbacks=callbacks, port=8000)
 # dmx.debug_control(callbacks)
 
 # Close the controller once we're done

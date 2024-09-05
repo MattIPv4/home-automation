@@ -51,7 +51,7 @@ cd ~/home-automation/lighting
 sudo systemctl enable "$PWD/lighting.service"
 sudo systemctl start lighting.service
 sudo systemctl status lighting.service
-sudo ufw allow 8080
+sudo ufw allow 8000
 cd ~/
 
 # Enable and expose home automation speedtest
@@ -59,5 +59,5 @@ cd ~/home-automation/speedtest
 sudo systemctl enable "$PWD/speedtest.service"
 sudo systemctl start speedtest.service
 sudo systemctl status speedtest.service
-sudo ufw allow 8081
+sudo ufw allow 8080
 cd ~/
