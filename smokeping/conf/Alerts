@@ -1,0 +1,4 @@
+*** Alerts ***
+
+to = |/dev/null
+from = smokeping@localhost

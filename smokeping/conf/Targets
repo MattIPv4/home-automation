@@ -1,0 +1,114 @@
+*** Targets ***
+
+probe = FPing
+menu = Top
+title = Network Latency Grapher
+remark = Welcome to SmokePing.
+
+
++ WebsiteRequest
+probe = Curl
+menu = Websites (Request)
+title = Websites (Request)
+
+++ YouTube
+menu = YouTube
+title = YouTube
+host = youtube.com
+
+++ BBC
+menu = BBC
+title = BBC
+host = bbc.co.uk
+
+++ Cloudflare
+menu = Cloudflare
+title = Cloudflare
+host = cloudflare.com
+
+++ Google
+menu = Google
+title = Google
+host = google.com
+
+
++ WebsitePing
+probe = FPing
+menu = Websites (Ping)
+title = Websites (Ping)
+
+++ YouTube
+menu = YouTube
+title = YouTube
+host = youtube.com
+
+++ BBC
+menu = BBC
+title = BBC
+host = bbc.co.uk
+
+++ Cloudflare
+menu = Cloudflare
+title = Cloudflare
+host = cloudflare.com
+
+++ Google
+menu = Google
+title = Google
+host = google.com
+
+
++ DNSLookup
+probe = DNS
+menu = DNS (Lookup)
+title = DNS (Lookup)
+
+++ YouTubeGoogle
+menu = YouTube x Google
+title = YouTube via Google DNS (8.8.8.8)
+host = 8.8.8.8
+lookup = youtube.com
+
+++ YouTubeCloudflare
+menu = YouTube x Cloudflare
+title = YouTube via Cloudflare DNS (1.1.1.1)
+host = 1.1.1.1
+lookup = youtube.com
+
+++ BBCGoogle
+menu = BBC x Google
+title = BBC via Google DNS (8.8.8.8)
+host = 8.8.8.8
+lookup = bbc.co.uk
+
+++ BBCCloudflare
+menu = BBC x Cloudflare
+title = BBC via Cloudflare DNS (1.1.1.1)
+host = 1.1.1.1
+lookup = bbc.co.uk
+
+
++ DNSPing
+probe = FPing
+menu = DNS (Ping)
+title = DNS (Ping)
+
+++ GoogleDNS
+menu = Google DNS
+title = Google DNS (8.8.8.8)
+host = 8.8.8.8
+
+++ GoogleDNSAlt
+menu = Google DNS Alt
+title = Google DNS (8.8.4.4)
+host = 8.8.4.4
+
+++ CloudflareDNS
+menu = Cloudflare DNS
+title = Cloudflare DNS (1.1.1.1)
+host = 1.1.1.1
+
+++ CloudflareDNSAlt
+menu = Cloudflare DNS Alt
+title = Cloudflare DNS (1.0.0.1)
+host = 1.0.0.1

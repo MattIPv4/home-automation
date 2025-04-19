@@ -1,0 +1,17 @@
+*** Probes ***
+
++ FPing
+binary = /usr/sbin/fping
+
++ DNS
+binary = /usr/bin/dig
+pings = 5
+
++ Curl
+binary = /usr/bin/curl
+pings = 5
+urlformat = http://%host%/
+follow_redirects = yes
+include_redirects = yes
+extraargs = -s -o /dev/null
+agent = User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 SmokePing/2.0

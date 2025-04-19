@@ -1,0 +1,7 @@
+/data/
+
+/conf/*
+!/conf/Alerts
+!/conf/Database
+!/conf/Probes
+!/conf/Targets

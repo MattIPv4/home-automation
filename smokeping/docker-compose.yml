@@ -1,0 +1,13 @@
+services:
+    smokeping:
+        container_name: smokeping
+        hostname: smokeping
+        ports:
+            - '8081:80'
+        volumes:
+            - './conf:/config'
+            - './data:/data'
+        environment:
+            - 'TZ=Europe/London'
+        image: 'lscr.io/linuxserver/smokeping:latest'
+        restart: unless-stopped

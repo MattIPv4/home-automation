@@ -27,3 +27,11 @@ sudo systemctl start speedtest.service
 sudo systemctl status speedtest.service
 sudo ufw allow 8080
 cd ~/
+
+# Enable and expose home automation smokeping
+cd ~/home-automation/smokeping
+sudo systemctl enable "$PWD/smokeping.service"
+sudo systemctl start smokeping.service
+sudo systemctl status smokeping.service
+sudo ufw allow 8081
+cd ~/
