@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# Raspberry Pi OS 64-bit base, using Raspberry Pi Imager (enable SSH and set password in settings)
+# Raspberry Pi OS 64-bit Lite (no desktop), using Raspberry Pi Imager (enable SSH and set password in settings)
 # Once imaged, cd to the boot drive and run `sed -i '' "s/rootwait/rootwait ip=<ip>/" cmdline.txt` to set a static ip
+# Before running this script, run `sudo rpi-update`, then `sudo reboot`
 # Before running this script, run `sudo apt-get -y update && sudo apt-get -y upgrade && sudo apt-get -y autoremove`, then `sudo reboot`
 # To run this script: `sudo apt-get -y install git && git clone https://github.com/MattIPv4/home-automation && ./home-automation/bootstrap-pi.sh`
 
