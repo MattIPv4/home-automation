@@ -8,7 +8,7 @@ Type=oneshot
 RemainAfterExit=yes
 TimeoutStartSec=0
 
-WorkingDirectory=/home/pi/home-automation/speedtest
+WorkingDirectory=/opt/home-automation/speedtest
 ExecStart=docker compose up -d
 ExecStop=docker compose down
 
