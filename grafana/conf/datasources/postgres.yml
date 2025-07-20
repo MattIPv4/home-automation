@@ -18,3 +18,20 @@ datasources:
 
     version: 1
     editable: false
+
+  - name: Speedtest
+    uid: speedtest
+
+    type: postgres
+    access: proxy
+    url: postgres:5432
+
+    user: postgres_ro
+    database: speedtest
+    jsonData:
+      sslmode: disable
+    secureJsonData:
+      password: postgres_ro
+
+    version: 1
+    editable: false

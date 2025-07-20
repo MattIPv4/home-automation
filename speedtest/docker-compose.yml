@@ -9,8 +9,21 @@ services:
             - 'APP_KEY=base64:ZNkctVtIJfrrXpn+Ne4Q0DFSj/COVaredhhaLnDQ+5s='
             - 'ADMIN_EMAIL=admin@localhost'
             - 'ADMIN_PASSWORD=password'
+            - 'DB_CONNECTION=pgsql'
+            - 'DB_HOST=postgres'
+            - 'DB_PORT=5432'
+            - 'DB_DATABASE=speedtest'
+            - 'DB_USERNAME=postgres'
+            - 'DB_PASSWORD=postgres'
             - 'DISPLAY_TIMEZONE=Europe/London'
             - 'SPEEDTEST_SCHEDULE=*/15 * * * *'
             - 'PUBLIC_DASHBOARD=true'
         image: 'lscr.io/linuxserver/speedtest-tracker:latest'
         restart: unless-stopped
+        networks:
+            - home-automation
+
+networks:
+    home-automation:
+        driver: bridge
+        name: home-automation

@@ -10,4 +10,7 @@ CREATE USER postgres_ro WITH PASSWORD 'postgres_ro';
 GRANT pg_read_all_data TO postgres_ro;
 GRANT pg_read_all_stats TO postgres_ro;
 GRANT pg_monitor TO postgres_ro;
+
+-- Create the speedtest database
+CREATE DATABASE speedtest WITH OWNER postgres;
 EOF
