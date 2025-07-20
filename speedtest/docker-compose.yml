@@ -2,7 +2,7 @@ services:
     speedtest-tracker:
         container_name: speedtest-tracker
         ports:
-            - '8080:80'
+            - '8081:80'
         volumes:
             - './conf:/config'
         environment:

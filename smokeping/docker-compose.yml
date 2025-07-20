@@ -3,7 +3,7 @@ services:
         container_name: smokeping
         hostname: smokeping
         ports:
-            - '8081:80'
+            - '8082:80'
         volumes:
             - './conf:/config'
             - './data:/data'
