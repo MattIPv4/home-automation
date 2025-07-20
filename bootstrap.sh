@@ -29,6 +29,12 @@ sudo ufw status verbose
 # Install Docker
 curl -fsSL https://get.docker.com | sudo sh
 
+# Enable and expose home automation grafana
+sudo systemctl enable /opt/home-automation/grafana/grafana.service
+sudo systemctl start grafana.service
+sudo systemctl status grafana.service
+sudo ufw allow 8080
+
 # Enable and expose home automation speedtest
 sudo systemctl enable /opt/home-automation/speedtest/speedtest.service
 sudo systemctl start speedtest.service

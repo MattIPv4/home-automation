@@ -1,0 +1,11 @@
+services:
+    grafana:
+        container_name: grafana
+        user: '0'
+        ports:
+            - '8080:3000'
+        volumes:
+            - './data:/var/lib/grafana'
+            - './conf:/etc/grafana/provisioning'
+        image: 'grafana/grafana:latest'
+        restart: unless-stopped
