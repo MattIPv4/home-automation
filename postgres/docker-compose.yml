@@ -1,0 +1,16 @@
+services:
+    postgres:
+        container_name: postgres
+        command: postgres -c 'config_file=/etc/postgresql/postgresql.conf'
+        ports:
+            - '5432:5432'
+        volumes:
+            - './data:/var/lib/postgresql/data'
+            - './conf/postgresql.conf:/etc/postgresql/postgresql.conf'
+            - './conf/extensions.sh:/docker-entrypoint-initdb.d/extensions.sh'
+        environment:
+            - 'POSTGRES_USER=postgres'
+            - 'POSTGRES_PASSWORD=postgres'
+            - 'PGDATA=/var/lib/postgresql/data'
+        image: 'postgres:latest'
+        restart: unless-stopped

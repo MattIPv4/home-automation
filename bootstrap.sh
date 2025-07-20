@@ -29,6 +29,12 @@ sudo ufw status verbose
 # Install Docker
 curl -fsSL https://get.docker.com | sudo sh
 
+# Enable and expose home automation postgres
+sudo systemctl enable /opt/home-automation/postgres/postgres.service
+sudo systemctl start postgres.service
+sudo systemctl status postgres.service
+sudo ufw allow 5432
+
 # Enable and expose home automation grafana
 sudo systemctl enable /opt/home-automation/grafana/grafana.service
 sudo systemctl start grafana.service

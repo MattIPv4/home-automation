@@ -1,0 +1,16 @@
+[Unit]
+Description=Home Automation: Postgres
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+TimeoutStartSec=0
+
+WorkingDirectory=/opt/home-automation/postgres
+ExecStart=docker compose up -d
+ExecStop=docker compose down
+
+[Install]
+WantedBy=multi-user.target
