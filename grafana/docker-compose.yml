@@ -7,5 +7,9 @@ services:
         volumes:
             - './data:/var/lib/grafana'
             - './conf:/etc/grafana/provisioning'
+        environment:
+            - 'GF_SECURITY_ADMIN_EMAIL=admin@localhost'
+            - 'GF_SECURITY_ADMIN_USERNAME=admin'
+            - 'GF_SECURITY_ADMIN_PASSWORD=password'
         image: 'grafana/grafana:latest'
         restart: unless-stopped

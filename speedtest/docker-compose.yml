@@ -7,6 +7,8 @@ services:
             - './conf:/config'
         environment:
             - 'APP_KEY=base64:ZNkctVtIJfrrXpn+Ne4Q0DFSj/COVaredhhaLnDQ+5s='
+            - 'ADMIN_EMAIL=admin@localhost'
+            - 'ADMIN_PASSWORD=password'
             - 'DISPLAY_TIMEZONE=Europe/London'
             - 'SPEEDTEST_SCHEDULE=*/15 * * * *'
             - 'PUBLIC_DASHBOARD=true'
