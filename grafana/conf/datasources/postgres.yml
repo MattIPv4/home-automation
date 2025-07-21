@@ -10,8 +10,8 @@ datasources:
     url: postgres:5432
 
     user: postgres_ro
-    database: postgres
     jsonData:
+      database: postgres
       sslmode: disable
     secureJsonData:
       password: postgres_ro
@@ -27,8 +27,8 @@ datasources:
     url: postgres:5432
 
     user: postgres_ro
-    database: speedtest
     jsonData:
+      database: speedtest
       sslmode: disable
     secureJsonData:
       password: postgres_ro
