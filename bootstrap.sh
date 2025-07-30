@@ -9,7 +9,7 @@
 #   Before installing Armbian, the NVIDIA-provided image may need to be installed first (https://www.nvidia.com/jetsonnano-start/)
 #   Armbian Minimal for Jetson Nano, using Etcher (SSH enabled by default as root:1234)
 #   Archive image using kernel 6.1 appears to work: https://archive.armbian.com (jetson-nano/archive/Armbian_23.8.1_Jetson-nano_bookworm_current_6.1.50_minimal.img.xz)
-#   Before running this script, run `apt install -y avahi-daemon libnss-mdns && sed -i 's/publish-workstation=no/publish-workstation=yes/' /etc/avahi/avahi-daemon.conf`, then `sudo reboot`
+#   Before running this script, run `echo "[[ -f ~/.bashrc ]] && . ~/.bashrc" >> ~/.bash_profile && apt install -y avahi-daemon libnss-mdns && sed -i 's/publish-workstation=no/publish-workstation=yes/' /etc/avahi/avahi-daemon.conf`, then `sudo reboot`
 #
 # Before running this script, if required `sudo hostnamectl hostname <hostname>`, run `sudo apt-get -y update && sudo apt-get -y upgrade && sudo apt-get -y autoremove`, then `sudo reboot`
 # To run this script: `sudo apt-get -y install git && git clone https://github.com/MattIPv4/home-automation /opt/home-automation && /opt/home-automation/bootstrap.sh`
