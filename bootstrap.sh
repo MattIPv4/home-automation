@@ -35,6 +35,11 @@ sudo systemctl start postgres.service
 sudo systemctl status postgres.service
 sudo ufw allow 5432
 
+# Enable and expose home automation backup
+sudo systemctl enable /opt/home-automation/backup/backup.service
+sudo systemctl start backup.service
+sudo systemctl status backup.service
+
 # Enable and expose home automation grafana
 sudo systemctl enable /opt/home-automation/grafana/grafana.service
 sudo systemctl start grafana.service

@@ -1,0 +1,23 @@
+services:
+    backup:
+        container_name: backup
+        volumes:
+            - './data:/opt/backup'
+            - './conf/entrypoint.sh:/etc/periodic/daily/entrypoint.sh'
+        environment:
+            - 'PGHOST=postgres'
+            - 'PGUSER=postgres'
+            - 'PGPASSWORD=postgres'
+        build:
+            dockerfile_inline: |
+                FROM alpine:latest
+                RUN apk add --no-cache postgresql-client
+                CMD crond -l 2 -f
+        restart: unless-stopped
+        networks:
+            - home-automation
+
+networks:
+    home-automation:
+        driver: bridge
+        name: home-automation
