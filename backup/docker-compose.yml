@@ -8,10 +8,12 @@ services:
             - 'PGHOST=postgres'
             - 'PGUSER=postgres'
             - 'PGPASSWORD=postgres'
+        env_file:
+            - './conf/s3.env'
         build:
             dockerfile_inline: |
                 FROM alpine:latest
-                RUN apk add --no-cache postgresql-client
+                RUN apk add --no-cache postgresql-client s3cmd
                 CMD crond -l 2 -f
         restart: unless-stopped
         networks:

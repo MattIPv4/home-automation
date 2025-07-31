@@ -36,6 +36,8 @@ sudo systemctl status postgres.service
 sudo ufw allow 5432
 
 # Enable and expose home automation backup
+cp /opt/home-automation/backup/conf/s3.env.example /opt/home-automation/backup/conf/s3.env
+nano /opt/home-automation/backup/conf/s3.env || true
 sudo systemctl enable /opt/home-automation/backup/backup.service
 sudo systemctl start backup.service
 sudo systemctl status backup.service

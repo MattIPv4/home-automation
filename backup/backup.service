@@ -9,7 +9,7 @@ RemainAfterExit=yes
 TimeoutStartSec=0
 
 WorkingDirectory=/opt/home-automation/backup
-ExecStart=docker compose up -d
+ExecStart=docker compose up -d --build
 ExecStop=docker compose down
 
 [Install]

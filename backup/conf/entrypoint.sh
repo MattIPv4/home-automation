@@ -2,6 +2,16 @@
 
 set -e -o pipefail
 
+# Store the run timestamp
+timestamp=$(date +%Y-%m-%d_%H-%M-%S)
+
+# Store the S3 path to use for the bucket
+s3="$S3_BUCKET"
+if [ -n "$S3_DIRECTORY" ]; then
+    s3="$s3/$S3_DIRECTORY"
+fi
+s3="$s3/$timestamp"
+
 # Create a fresh backup directory
 directory="/opt/backup"
 mkdir -p "$directory"
@@ -35,10 +45,10 @@ for db in $databases; do
 
                 # Compress the dumped table
                 tar --create --gzip --file="$directory/$db/$table.sql.tar.gz" --directory="$directory/$db" "$table.sql"
-
                 rm "$directory/$db/$table.sql"
 
-                # TODO: Write the backup to a remote location
+                # Upload the compressed table to S3
+                s3cmd put --host-bucket="%(bucket)s.$S3_ENDPOINT" --access_key=$S3_ACCESS_KEY --secret_key=$S3_SECRET_KEY --quiet --acl-private "$directory/$db/$table.sql.tar.gz" "s3://$s3/$db/$table.sql.tar.gz"
             )
 
             if [ "$?" != "0" ]; then
