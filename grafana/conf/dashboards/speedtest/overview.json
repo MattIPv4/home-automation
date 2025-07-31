@@ -1,0 +1,620 @@
+{
+  "graphTooltip": 2,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "panels": [],
+      "repeat": "metric",
+      "title": "$metric",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "speedtest"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "blue",
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "hue",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "line"
+            }
+          },
+          "displayName": "$metric",
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 19,
+        "x": 0,
+        "y": 1
+      },
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "speedtest"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  CASE\n    WHEN ${metric:singlequote} IN ('download', 'upload') THEN ${metric:raw} * 8.0 / 1000.0 / 1000.0\n    ELSE ${metric:raw}\n  END AS metric,\n  created_at,\n  CASE\n    WHEN ${metric:singlequote} = 'download' THEN 80\n    WHEN ${metric:singlequote} = 'upload' THEN 20\n    WHEN ${metric:singlequote} = 'ping' THEN NULL\n  END AS expected,\n  CASE\n    WHEN ${metric:singlequote} = 'download' THEN 61.6\n    WHEN ${metric:singlequote} = 'upload' THEN NULL\n    WHEN ${metric:singlequote} = 'ping' THEN NULL\n  END AS guaranteed,\n  CASE\n    WHEN ${metric:singlequote} = 'download' THEN 'blue'\n    WHEN ${metric:singlequote} = 'upload' THEN 'purple'\n    WHEN ${metric:singlequote} = 'ping' THEN 'green'\n  END AS color,\n  CASE\n    WHEN ${metric:singlequote} IN ('download', 'upload') THEN 'Mbps'\n    ELSE 'ms'\n  END AS unit\nFROM results\nWHERE \n  status = 'completed'\n  AND $__timeFilter(created_at)\nORDER BY created_at DESC ",
+          "refId": "Data",
+          "sql": {
+            "columns": [
+              {
+                "alias": "\"metric\"",
+                "parameters": [
+                  {
+                    "name": "${metric:raw}",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "created_at",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "orderBy": {
+              "property": {
+                "name": [
+                  "created_at"
+                ],
+                "type": "string"
+              },
+              "type": "property"
+            },
+            "orderByDirection": "DESC",
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "properties": {
+                    "field": "status",
+                    "fieldSrc": "field",
+                    "operator": "equal",
+                    "value": [
+                      "completed"
+                    ],
+                    "valueError": [
+                      null
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "properties": {
+                    "field": "created_at",
+                    "fieldSrc": "field",
+                    "operator": "macros",
+                    "value": [
+                      "timeFilter"
+                    ],
+                    "valueError": [
+                      null
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "datetime"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "type": "group"
+            },
+            "whereString": "(status = 'completed' AND $__timeFilter(created_at))"
+          },
+          "table": "results"
+        }
+      ],
+      "title": "",
+      "transformations": [
+        {
+          "id": "configFromData",
+          "options": {
+            "applyTo": {
+              "id": "byName",
+              "options": "metric"
+            },
+            "configRefId": "Data",
+            "mappings": [
+              {
+                "fieldName": "metric",
+                "handlerArguments": {
+                  "threshold": {
+                    "color": "red"
+                  }
+                },
+                "handlerKey": "threshold1",
+                "reducerId": "mean"
+              },
+              {
+                "fieldName": "created_at",
+                "handlerKey": "__ignore"
+              },
+              {
+                "fieldName": "unit",
+                "handlerKey": "unit",
+                "reducerId": "firstNotNull"
+              },
+              {
+                "fieldName": "color",
+                "handlerKey": "color",
+                "reducerId": "firstNotNull"
+              },
+              {
+                "fieldName": "expected",
+                "handlerArguments": {
+                  "threshold": {
+                    "color": "green"
+                  }
+                },
+                "handlerKey": "threshold1",
+                "reducerId": "firstNotNull"
+              },
+              {
+                "fieldName": "guaranteed",
+                "handlerArguments": {
+                  "threshold": {
+                    "color": "yellow"
+                  }
+                },
+                "handlerKey": "threshold1",
+                "reducerId": "firstNotNull"
+              }
+            ]
+          }
+        },
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "metric",
+                "created_at"
+              ]
+            }
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "speedtest"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "displayName": "-",
+          "fieldMinMax": false,
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 5,
+        "x": 19,
+        "y": 1
+      },
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "firstNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": false,
+        "sizing": "auto",
+        "text": {
+          "titleSize": 15
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "speedtest"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  CASE\n    WHEN ${metric:singlequote} IN ('download', 'upload') THEN ${metric:raw} * 8.0 / 1000.0 / 1000.0\n    ELSE ${metric:raw}\n  END AS metric,\n  created_at,\n  CASE\n    WHEN ${metric:singlequote} = 'download' THEN 80\n    WHEN ${metric:singlequote} = 'upload' THEN 20\n    WHEN ${metric:singlequote} = 'ping' THEN NULL\n  END AS expected,\n  CASE\n    WHEN ${metric:singlequote} = 'download' THEN 'blue'\n    WHEN ${metric:singlequote} = 'upload' THEN 'purple'\n    WHEN ${metric:singlequote} = 'ping' THEN 'green'\n  END AS color,\n  CASE\n    WHEN ${metric:singlequote} IN ('download', 'upload') THEN 'Mbps'\n    ELSE 'ms'\n  END AS unit\nFROM results\nWHERE \n  status = 'completed'\n  AND $__timeFilter(created_at)\nORDER BY created_at DESC ",
+          "refId": "Data",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "max",
+            "mode": "reduceRow",
+            "reduce": {
+              "include": [
+                "expected",
+                "metric"
+              ],
+              "reducer": "max"
+            }
+          }
+        },
+        {
+          "id": "formatTime",
+          "options": {
+            "outputFormat": "[Latest: ] LTS, L",
+            "timeField": "created_at",
+            "timezone": "browser",
+            "useTimezone": true
+          }
+        },
+        {
+          "id": "configFromData",
+          "options": {
+            "applyTo": {
+              "id": "byName",
+              "options": "metric"
+            },
+            "configRefId": "Data",
+            "mappings": [
+              {
+                "fieldName": "created_at",
+                "handlerKey": "displayName",
+                "reducerId": "firstNotNull"
+              },
+              {
+                "fieldName": "unit",
+                "handlerKey": "unit",
+                "reducerId": "firstNotNull"
+              },
+              {
+                "fieldName": "color",
+                "handlerKey": "color",
+                "reducerId": "firstNotNull"
+              },
+              {
+                "fieldName": "metric",
+                "handlerKey": "__ignore",
+                "reducerId": "lastNotNull"
+              },
+              {
+                "fieldName": "expected",
+                "handlerKey": "__ignore",
+                "reducerId": "lastNotNull"
+              },
+              {
+                "fieldName": "max",
+                "handlerKey": "max",
+                "reducerId": "firstNotNull"
+              }
+            ]
+          }
+        },
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "metric"
+              ]
+            }
+          }
+        }
+      ],
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "speedtest"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "displayName": "Average",
+          "fieldMinMax": false,
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 5,
+        "x": 19,
+        "y": 7
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "speedtest"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  CASE\n    WHEN ${metric:singlequote} IN ('download', 'upload') THEN ${metric:raw} * 8.0 / 1000.0 / 1000.0\n    ELSE ${metric:raw}\n  END AS metric,\n  created_at,\n  CASE\n    WHEN ${metric:singlequote} = 'download' THEN 'blue'\n    WHEN ${metric:singlequote} = 'upload' THEN 'purple'\n    WHEN ${metric:singlequote} = 'ping' THEN 'green'\n  END AS color,\n  CASE\n    WHEN ${metric:singlequote} IN ('download', 'upload') THEN 'Mbps'\n    ELSE 'ms'\n  END AS unit\nFROM results\nWHERE \n  status = 'completed'\n  AND $__timeFilter(created_at)\nORDER BY created_at DESC ",
+          "refId": "Data",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "average",
+            "cumulative": {
+              "field": "metric",
+              "reducer": "mean"
+            },
+            "mode": "cumulativeFunctions",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "configFromData",
+          "options": {
+            "applyTo": {
+              "id": "byName",
+              "options": "average"
+            },
+            "configRefId": "Data",
+            "mappings": [
+              {
+                "fieldName": "metric",
+                "handlerKey": "__ignore"
+              },
+              {
+                "fieldName": "created_at",
+                "handlerKey": "__ignore"
+              },
+              {
+                "fieldName": "color",
+                "handlerKey": "color",
+                "reducerId": "firstNotNull"
+              },
+              {
+                "fieldName": "unit",
+                "handlerKey": "unit",
+                "reducerId": "firstNotNull"
+              },
+              {
+                "fieldName": "average",
+                "handlerKey": "__ignore"
+              }
+            ]
+          }
+        },
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "average"
+              ]
+            }
+          }
+        }
+      ],
+      "type": "stat"
+    }
+  ],
+  "preload": false,
+  "refresh": "5m",
+  "schemaVersion": 41,
+  "templating": {
+    "list": [
+      {
+        "allowCustomValue": false,
+        "current": {
+          "text": [
+            "download",
+            "upload",
+            "ping"
+          ],
+          "value": [
+            "download",
+            "upload",
+            "ping"
+          ]
+        },
+        "hide": 2,
+        "includeAll": false,
+        "multi": true,
+        "name": "metric",
+        "options": [
+          {
+            "selected": true,
+            "text": "download",
+            "value": "download"
+          },
+          {
+            "selected": true,
+            "text": "upload",
+            "value": "upload"
+          },
+          {
+            "selected": true,
+            "text": "ping",
+            "value": "ping"
+          }
+        ],
+        "query": "download, upload, ping",
+        "type": "custom"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Speedtest Overview"
+}
