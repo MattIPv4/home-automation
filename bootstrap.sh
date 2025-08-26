@@ -12,7 +12,7 @@
 #   Before running this script, run `echo "[[ -f ~/.bashrc ]] && . ~/.bashrc" >> ~/.bash_profile && apt install -y avahi-daemon libnss-mdns && sed -i 's/publish-workstation=no/publish-workstation=yes/' /etc/avahi/avahi-daemon.conf`, then `sudo reboot`
 #
 # Before running this script, if required `sudo hostnamectl hostname <hostname>`, run `sudo apt-get -y update && sudo apt-get -y upgrade && sudo apt-get -y autoremove`, then `sudo reboot`
-# To run this script: `sudo apt-get -y install git && git clone https://github.com/MattIPv4/home-automation /opt/home-automation && /opt/home-automation/bootstrap.sh`
+# To run this script: `sudo apt-get -y install git && sudo git clone https://github.com/MattIPv4/home-automation /opt/home-automation && sudo chown -R $(whoami) /opt/home-automation && /opt/home-automation/bootstrap.sh`
 
 set -e -o pipefail
 

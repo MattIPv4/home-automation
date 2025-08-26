@@ -48,7 +48,9 @@ for db in $databases; do
                 rm "$directory/$db/$table.sql"
 
                 # Upload the compressed table to S3
-                s3cmd put --host-bucket="%(bucket)s.$S3_ENDPOINT" --access_key=$S3_ACCESS_KEY --secret_key=$S3_SECRET_KEY --quiet --acl-private "$directory/$db/$table.sql.tar.gz" "s3://$s3/$db/$table.sql.tar.gz"
+                if [ -n "$S3_BUCKET" ] && [ -n "$S3_ACCESS_KEY" ] && [ -n "$S3_SECRET_KEY" ] && [ -n "$S3_ENDPOINT" ]; then
+                    s3cmd put --host-bucket="%(bucket)s.$S3_ENDPOINT" --access_key=$S3_ACCESS_KEY --secret_key=$S3_SECRET_KEY --quiet --acl-private "$directory/$db/$table.sql.tar.gz" "s3://$s3/$db/$table.sql.tar.gz"
+                fi
             )
 
             if [ "$?" != "0" ]; then
