@@ -9,8 +9,9 @@ services:
             - './conf:/etc/grafana/provisioning'
         environment:
             - 'GF_SECURITY_ADMIN_EMAIL=admin@localhost'
-            - 'GF_SECURITY_ADMIN_USERNAME=admin'
+            - 'GF_SECURITY_ADMIN_USER=admin'
             - 'GF_SECURITY_ADMIN_PASSWORD=password'
+            - 'GF_PLUGINS_PREINSTALL_SYNC=yesoreyeram-infinity-datasource'
         image: 'grafana/grafana:latest'
         restart: unless-stopped
         networks:

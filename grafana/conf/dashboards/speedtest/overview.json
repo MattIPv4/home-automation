@@ -16,8 +16,8 @@
     },
     {
       "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "speedtest"
+        "type": "datasource",
+        "uid": "-- Mixed --"
       },
       "fieldConfig": {
         "defaults": {
@@ -49,6 +49,7 @@
               "type": "linear"
             },
             "showPoints": "auto",
+            "showValues": false,
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -70,7 +71,40 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "placeholder"
+            },
+            "properties": [
+              {
+                "id": "custom.lineWidth",
+                "value": 0
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "custom.showPoints",
+                "value": "never"
+              },
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": true,
+                  "tooltip": true,
+                  "viz": false
+                }
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "hidden"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
@@ -100,100 +134,128 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\n  CASE\n    WHEN ${metric:singlequote} IN ('download', 'upload') THEN ${metric:raw} * 8.0 / 1000.0 / 1000.0\n    ELSE ${metric:raw}\n  END AS metric,\n  created_at,\n  CASE\n    WHEN ${metric:singlequote} = 'download' THEN 80\n    WHEN ${metric:singlequote} = 'upload' THEN 20\n    WHEN ${metric:singlequote} = 'ping' THEN NULL\n  END AS expected,\n  CASE\n    WHEN ${metric:singlequote} = 'download' THEN 61.6\n    WHEN ${metric:singlequote} = 'upload' THEN NULL\n    WHEN ${metric:singlequote} = 'ping' THEN NULL\n  END AS guaranteed,\n  CASE\n    WHEN ${metric:singlequote} = 'download' THEN 'blue'\n    WHEN ${metric:singlequote} = 'upload' THEN 'purple'\n    WHEN ${metric:singlequote} = 'ping' THEN 'green'\n  END AS color,\n  CASE\n    WHEN ${metric:singlequote} IN ('download', 'upload') THEN 'Mbps'\n    ELSE 'ms'\n  END AS unit\nFROM results\nWHERE \n  status = 'completed'\n  AND $__timeFilter(created_at)\nORDER BY created_at DESC ",
-          "refId": "Data",
-          "sql": {
-            "columns": [
-              {
-                "alias": "\"metric\"",
-                "parameters": [
-                  {
-                    "name": "${metric:raw}",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "parameters": [
-                  {
-                    "name": "created_at",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "orderBy": {
-              "property": {
-                "name": [
-                  "created_at"
-                ],
-                "type": "string"
-              },
-              "type": "property"
-            },
-            "orderByDirection": "DESC",
-            "whereJsonTree": {
-              "children1": [
-                {
-                  "properties": {
-                    "field": "status",
-                    "fieldSrc": "field",
-                    "operator": "equal",
-                    "value": [
-                      "completed"
-                    ],
-                    "valueError": [
-                      null
-                    ],
-                    "valueSrc": [
-                      "value"
-                    ],
-                    "valueType": [
-                      "text"
-                    ]
-                  },
-                  "type": "rule"
-                },
-                {
-                  "properties": {
-                    "field": "created_at",
-                    "fieldSrc": "field",
-                    "operator": "macros",
-                    "value": [
-                      "timeFilter"
-                    ],
-                    "valueError": [
-                      null
-                    ],
-                    "valueSrc": [
-                      "value"
-                    ],
-                    "valueType": [
-                      "datetime"
-                    ]
-                  },
-                  "type": "rule"
-                }
-              ],
-              "type": "group"
-            },
-            "whereString": "(status = 'completed' AND $__timeFilter(created_at))"
+          "rawSql": "SELECT\n  CASE\n    WHEN ${metric:singlequote} IN ('download', 'upload') THEN ${metric:raw} * 8.0 / 1000.0 / 1000.0\n    ELSE ${metric:raw}\n  END AS metric,\n  created_at\nFROM results\nWHERE \n  status = 'completed'\n  AND $__timeFilter(created_at)\nORDER BY created_at DESC ",
+          "refId": "Data"
+        },
+        {
+          "columns": [],
+          "dataset": "speedtest",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "config"
           },
-          "table": "results"
+          "editorMode": "builder",
+          "filters": [],
+          "format": "table",
+          "global_query_id": "",
+          "parser": "backend",
+          "rawSql": "",
+          "refId": "Config File",
+          "referenceName": "config.json",
+          "root_selector": "$.speedtest.${metric:raw}",
+          "source": "reference",
+          "type": "json",
+          "url": "",
+          "url_options": {
+            "data": "",
+            "method": "GET"
+          }
+        },
+        {
+          "columns": [],
+          "data": "{\n  \"download\": {\n    \"color\": \"blue\",\n    \"unit\": \"Mbps\"\n  },\n  \"upload\": {\n    \"color\": \"purple\",\n    \"unit\": \"Mbps\"\n  },\n  \"ping\": {\n    \"color\": \"green\",\n    \"unit\": \"ms\"\n  }\n}",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "config"
+          },
+          "filters": [],
+          "format": "table",
+          "global_query_id": "",
+          "parser": "backend",
+          "refId": "Config Inline",
+          "root_selector": "$.${metric:raw}",
+          "source": "inline",
+          "type": "json",
+          "url": "",
+          "url_options": {
+            "data": "",
+            "method": "GET"
+          }
         }
       ],
       "title": "",
       "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "placeholder",
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "metric"
+                }
+              },
+              "right": {
+                "fixed": "0"
+              }
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "configFromData",
+          "options": {
+            "applyTo": {
+              "id": "byName",
+              "options": "placeholder"
+            },
+            "configRefId": "Config File",
+            "mappings": [
+              {
+                "fieldName": "expected",
+                "handlerArguments": {
+                  "threshold": {
+                    "color": "green"
+                  }
+                },
+                "handlerKey": "threshold1"
+              },
+              {
+                "fieldName": "guaranteed",
+                "handlerArguments": {
+                  "threshold": {
+                    "color": "yellow"
+                  }
+                },
+                "handlerKey": "threshold1"
+              }
+            ]
+          }
+        },
+        {
+          "id": "configFromData",
+          "options": {
+            "applyTo": {
+              "id": "byName",
+              "options": "metric"
+            },
+            "configRefId": "Config Inline",
+            "mappings": [
+              {
+                "fieldName": "color",
+                "handlerKey": "color"
+              },
+              {
+                "fieldName": "unit",
+                "handlerKey": "unit"
+              }
+            ]
+          }
+        },
         {
           "id": "configFromData",
           "options": {
@@ -218,47 +280,10 @@
                 "handlerKey": "__ignore"
               },
               {
-                "fieldName": "unit",
-                "handlerKey": "unit",
-                "reducerId": "firstNotNull"
-              },
-              {
-                "fieldName": "color",
-                "handlerKey": "color",
-                "reducerId": "firstNotNull"
-              },
-              {
-                "fieldName": "expected",
-                "handlerArguments": {
-                  "threshold": {
-                    "color": "green"
-                  }
-                },
-                "handlerKey": "threshold1",
-                "reducerId": "firstNotNull"
-              },
-              {
-                "fieldName": "guaranteed",
-                "handlerArguments": {
-                  "threshold": {
-                    "color": "yellow"
-                  }
-                },
-                "handlerKey": "threshold1",
-                "reducerId": "firstNotNull"
+                "fieldName": "placeholder",
+                "handlerKey": "__ignore"
               }
             ]
-          }
-        },
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "include": {
-              "names": [
-                "metric",
-                "created_at"
-              ]
-            }
           }
         }
       ],
@@ -266,8 +291,8 @@
     },
     {
       "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "speedtest"
+        "type": "datasource",
+        "uid": "-- Mixed --"
       },
       "fieldConfig": {
         "defaults": {
@@ -322,41 +347,95 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\n  CASE\n    WHEN ${metric:singlequote} IN ('download', 'upload') THEN ${metric:raw} * 8.0 / 1000.0 / 1000.0\n    ELSE ${metric:raw}\n  END AS metric,\n  created_at,\n  CASE\n    WHEN ${metric:singlequote} = 'download' THEN 80\n    WHEN ${metric:singlequote} = 'upload' THEN 20\n    WHEN ${metric:singlequote} = 'ping' THEN NULL\n  END AS expected,\n  CASE\n    WHEN ${metric:singlequote} = 'download' THEN 'blue'\n    WHEN ${metric:singlequote} = 'upload' THEN 'purple'\n    WHEN ${metric:singlequote} = 'ping' THEN 'green'\n  END AS color,\n  CASE\n    WHEN ${metric:singlequote} IN ('download', 'upload') THEN 'Mbps'\n    ELSE 'ms'\n  END AS unit\nFROM results\nWHERE \n  status = 'completed'\n  AND $__timeFilter(created_at)\nORDER BY created_at DESC ",
-          "refId": "Data",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
+          "rawSql": "SELECT\n  CASE\n    WHEN ${metric:singlequote} IN ('download', 'upload') THEN ${metric:raw} * 8.0 / 1000.0 / 1000.0\n    ELSE ${metric:raw}\n  END AS metric,\n  created_at\nFROM results\nWHERE \n  status = 'completed'\n  AND $__timeFilter(created_at)\nORDER BY created_at DESC ",
+          "refId": "Data"
+        },
+        {
+          "columns": [],
+          "dataset": "speedtest",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "config"
+          },
+          "editorMode": "builder",
+          "filters": [],
+          "format": "table",
+          "global_query_id": "",
+          "parser": "backend",
+          "rawSql": "",
+          "refId": "Config File",
+          "referenceName": "config.json",
+          "root_selector": "$.speedtest.${metric:raw}",
+          "source": "reference",
+          "type": "json",
+          "url": "",
+          "url_options": {
+            "data": "",
+            "method": "GET"
+          }
+        },
+        {
+          "columns": [],
+          "data": "{\n  \"download\": {\n    \"color\": \"blue\",\n    \"unit\": \"Mbps\"\n  },\n  \"upload\": {\n    \"color\": \"purple\",\n    \"unit\": \"Mbps\"\n  },\n  \"ping\": {\n    \"color\": \"green\",\n    \"unit\": \"ms\"\n  }\n}",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "config"
+          },
+          "filters": [],
+          "format": "table",
+          "global_query_id": "",
+          "parser": "backend",
+          "refId": "Config Inline",
+          "root_selector": "$.${metric:raw}",
+          "source": "inline",
+          "type": "json",
+          "url": "",
+          "url_options": {
+            "data": "",
+            "method": "GET"
           }
         }
       ],
       "title": "",
       "transformations": [
         {
-          "id": "calculateField",
+          "id": "configFromData",
           "options": {
-            "alias": "max",
-            "mode": "reduceRow",
-            "reduce": {
-              "include": [
-                "expected",
-                "metric"
-              ],
-              "reducer": "max"
-            }
+            "applyTo": {
+              "id": "byName",
+              "options": "metric"
+            },
+            "configRefId": "Config File",
+            "mappings": [
+              {
+                "fieldName": "expected",
+                "handlerKey": "max"
+              },
+              {
+                "fieldName": "guaranteed",
+                "handlerKey": "__ignore"
+              }
+            ]
+          }
+        },
+        {
+          "id": "configFromData",
+          "options": {
+            "applyTo": {
+              "id": "byName",
+              "options": "metric"
+            },
+            "configRefId": "Config Inline",
+            "mappings": [
+              {
+                "fieldName": "color",
+                "handlerKey": "color"
+              },
+              {
+                "fieldName": "unit",
+                "handlerKey": "unit"
+              }
+            ]
           }
         },
         {
@@ -383,41 +462,11 @@
                 "reducerId": "firstNotNull"
               },
               {
-                "fieldName": "unit",
-                "handlerKey": "unit",
-                "reducerId": "firstNotNull"
-              },
-              {
-                "fieldName": "color",
-                "handlerKey": "color",
-                "reducerId": "firstNotNull"
-              },
-              {
                 "fieldName": "metric",
                 "handlerKey": "__ignore",
                 "reducerId": "lastNotNull"
-              },
-              {
-                "fieldName": "expected",
-                "handlerKey": "__ignore",
-                "reducerId": "lastNotNull"
-              },
-              {
-                "fieldName": "max",
-                "handlerKey": "max",
-                "reducerId": "firstNotNull"
               }
             ]
-          }
-        },
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "include": {
-              "names": [
-                "metric"
-              ]
-            }
           }
         }
       ],
@@ -425,8 +474,8 @@
     },
     {
       "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "speedtest"
+        "type": "datasource",
+        "uid": "-- Mixed --"
       },
       "fieldConfig": {
         "defaults": {
@@ -480,24 +529,28 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\n  CASE\n    WHEN ${metric:singlequote} IN ('download', 'upload') THEN ${metric:raw} * 8.0 / 1000.0 / 1000.0\n    ELSE ${metric:raw}\n  END AS metric,\n  created_at,\n  CASE\n    WHEN ${metric:singlequote} = 'download' THEN 'blue'\n    WHEN ${metric:singlequote} = 'upload' THEN 'purple'\n    WHEN ${metric:singlequote} = 'ping' THEN 'green'\n  END AS color,\n  CASE\n    WHEN ${metric:singlequote} IN ('download', 'upload') THEN 'Mbps'\n    ELSE 'ms'\n  END AS unit\nFROM results\nWHERE \n  status = 'completed'\n  AND $__timeFilter(created_at)\nORDER BY created_at DESC ",
-          "refId": "Data",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
+          "rawSql": "SELECT\n  CASE\n    WHEN ${metric:singlequote} IN ('download', 'upload') THEN ${metric:raw} * 8.0 / 1000.0 / 1000.0\n    ELSE ${metric:raw}\n  END AS metric,\n  created_at\nFROM results\nWHERE \n  status = 'completed'\n  AND $__timeFilter(created_at)\nORDER BY created_at DESC ",
+          "refId": "Data"
+        },
+        {
+          "columns": [],
+          "data": "{\n  \"download\": {\n    \"color\": \"blue\",\n    \"unit\": \"Mbps\"\n  },\n  \"upload\": {\n    \"color\": \"purple\",\n    \"unit\": \"Mbps\"\n  },\n  \"ping\": {\n    \"color\": \"green\",\n    \"unit\": \"ms\"\n  }\n}",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "config"
+          },
+          "filters": [],
+          "format": "table",
+          "global_query_id": "",
+          "parser": "backend",
+          "refId": "Config Inline",
+          "root_selector": "$.${metric:raw}",
+          "source": "inline",
+          "type": "json",
+          "url": "",
+          "url_options": {
+            "data": "",
+            "method": "GET"
           }
         }
       ],
@@ -524,29 +577,15 @@
               "id": "byName",
               "options": "average"
             },
-            "configRefId": "Data",
+            "configRefId": "Config Inline",
             "mappings": [
               {
-                "fieldName": "metric",
-                "handlerKey": "__ignore"
-              },
-              {
-                "fieldName": "created_at",
-                "handlerKey": "__ignore"
-              },
-              {
                 "fieldName": "color",
-                "handlerKey": "color",
-                "reducerId": "firstNotNull"
+                "handlerKey": "color"
               },
               {
                 "fieldName": "unit",
-                "handlerKey": "unit",
-                "reducerId": "firstNotNull"
-              },
-              {
-                "fieldName": "average",
-                "handlerKey": "__ignore"
+                "handlerKey": "unit"
               }
             ]
           }
@@ -567,7 +606,7 @@
   ],
   "preload": false,
   "refresh": "5m",
-  "schemaVersion": 41,
+  "schemaVersion": 42,
   "templating": {
     "list": [
       {
@@ -606,7 +645,8 @@
           }
         ],
         "query": "download, upload, ping",
-        "type": "custom"
+        "type": "custom",
+        "valuesFormat": "csv"
       }
     ]
   },

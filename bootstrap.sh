@@ -43,6 +43,8 @@ sudo systemctl start backup.service
 sudo systemctl status backup.service
 
 # Enable and expose home automation grafana
+cp /opt/home-automation/grafana/conf/datasources/config.yml.example /opt/home-automation/grafana/conf/datasources/config.yml
+nano /opt/home-automation/grafana/conf/datasources/config.yml || true
 sudo systemctl enable /opt/home-automation/grafana/grafana.service
 sudo systemctl start grafana.service
 sudo systemctl status grafana.service
