@@ -1,660 +1,874 @@
 {
-  "graphTooltip": 2,
-  "panels": [
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 0
-      },
-      "panels": [],
-      "repeat": "metric",
-      "title": "$metric",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "datasource",
-        "uid": "-- Mixed --"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "blue",
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "hue",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "smooth",
-            "lineWidth": 2,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "showValues": false,
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "line"
-            }
-          },
-          "displayName": "$metric",
-          "mappings": [],
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "placeholder"
-            },
-            "properties": [
-              {
-                "id": "custom.lineWidth",
-                "value": 0
-              },
-              {
-                "id": "custom.fillOpacity",
-                "value": 0
-              },
-              {
-                "id": "custom.showPoints",
-                "value": "never"
-              },
-              {
-                "id": "custom.hideFrom",
-                "value": {
-                  "legend": true,
-                  "tooltip": true,
-                  "viz": false
+  "kind": "Dashboard",
+  "apiVersion": "dashboard.grafana.app/v2",
+  "spec": {
+    "cursorSync": "Tooltip",
+    "editable": false,
+    "elements": {
+      "chart": {
+        "kind": "Panel",
+        "spec": {
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "speedtest"
+                      },
+                      "group": "grafana-postgresql-datasource",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "editorMode": "code",
+                        "format": "table",
+                        "rawQuery": true,
+                        "rawSql": "SELECT\n  CASE\n    WHEN ${metric:singlequote} IN ('download', 'upload') THEN ${metric:raw} * 8.0 / 1000.0 / 1000.0\n    ELSE ${metric:raw}\n  END AS metric,\n  created_at\nFROM results\nWHERE \n  status = 'completed'\n  AND $__timeFilter(created_at)\nORDER BY created_at DESC "
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "Data"
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "config"
+                      },
+                      "group": "yesoreyeram-infinity-datasource",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "columns": [],
+                        "dataset": "speedtest",
+                        "editorMode": "builder",
+                        "filters": [],
+                        "format": "table",
+                        "global_query_id": "",
+                        "parser": "backend",
+                        "rawSql": "",
+                        "referenceName": "config.json",
+                        "root_selector": "$.speedtest.${metric:raw}",
+                        "source": "reference",
+                        "type": "json",
+                        "url": "",
+                        "url_options": {
+                          "data": "",
+                          "method": "GET"
+                        }
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "Config File"
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "config"
+                      },
+                      "group": "yesoreyeram-infinity-datasource",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "columns": [],
+                        "data": "{\n  \"download\": {\n    \"color\": \"blue\",\n    \"unit\": \"Mbps\"\n  },\n  \"upload\": {\n    \"color\": \"purple\",\n    \"unit\": \"Mbps\"\n  },\n  \"ping\": {\n    \"color\": \"green\",\n    \"unit\": \"ms\"\n  }\n}",
+                        "filters": [],
+                        "format": "table",
+                        "global_query_id": "",
+                        "parser": "backend",
+                        "root_selector": "$.${metric:raw}",
+                        "source": "inline",
+                        "type": "json",
+                        "url": "",
+                        "url_options": {
+                          "data": "",
+                          "method": "GET"
+                        }
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "Config Inline"
+                  }
                 }
-              },
-              {
-                "id": "custom.axisPlacement",
-                "value": "hidden"
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 19,
-        "x": 0,
-        "y": 1
-      },
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "speedtest"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT\n  CASE\n    WHEN ${metric:singlequote} IN ('download', 'upload') THEN ${metric:raw} * 8.0 / 1000.0 / 1000.0\n    ELSE ${metric:raw}\n  END AS metric,\n  created_at\nFROM results\nWHERE \n  status = 'completed'\n  AND $__timeFilter(created_at)\nORDER BY created_at DESC ",
-          "refId": "Data"
-        },
-        {
-          "columns": [],
-          "dataset": "speedtest",
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "config"
-          },
-          "editorMode": "builder",
-          "filters": [],
-          "format": "table",
-          "global_query_id": "",
-          "parser": "backend",
-          "rawSql": "",
-          "refId": "Config File",
-          "referenceName": "config.json",
-          "root_selector": "$.speedtest.${metric:raw}",
-          "source": "reference",
-          "type": "json",
-          "url": "",
-          "url_options": {
-            "data": "",
-            "method": "GET"
-          }
-        },
-        {
-          "columns": [],
-          "data": "{\n  \"download\": {\n    \"color\": \"blue\",\n    \"unit\": \"Mbps\"\n  },\n  \"upload\": {\n    \"color\": \"purple\",\n    \"unit\": \"Mbps\"\n  },\n  \"ping\": {\n    \"color\": \"green\",\n    \"unit\": \"ms\"\n  }\n}",
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "config"
-          },
-          "filters": [],
-          "format": "table",
-          "global_query_id": "",
-          "parser": "backend",
-          "refId": "Config Inline",
-          "root_selector": "$.${metric:raw}",
-          "source": "inline",
-          "type": "json",
-          "url": "",
-          "url_options": {
-            "data": "",
-            "method": "GET"
-          }
-        }
-      ],
-      "title": "",
-      "transformations": [
-        {
-          "id": "calculateField",
-          "options": {
-            "alias": "placeholder",
-            "binary": {
-              "left": {
-                "matcher": {
-                  "id": "byName",
-                  "options": "metric"
+              ],
+              "queryOptions": {},
+              "transformations": [
+                {
+                  "group": "calculateField",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "alias": "placeholder",
+                      "binary": {
+                        "left": {
+                          "matcher": {
+                            "id": "byName",
+                            "options": "metric"
+                          }
+                        },
+                        "right": {
+                          "fixed": "0"
+                        }
+                      },
+                      "mode": "binary",
+                      "reduce": {
+                        "reducer": "sum"
+                      }
+                    }
+                  }
+                },
+                {
+                  "group": "configFromData",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "applyTo": {
+                        "id": "byName",
+                        "options": "placeholder"
+                      },
+                      "configRefId": "Config File",
+                      "mappings": [
+                        {
+                          "fieldName": "expected",
+                          "handlerArguments": {
+                            "threshold": {
+                              "color": "green"
+                            }
+                          },
+                          "handlerKey": "threshold1"
+                        },
+                        {
+                          "fieldName": "guaranteed",
+                          "handlerArguments": {
+                            "threshold": {
+                              "color": "yellow"
+                            }
+                          },
+                          "handlerKey": "threshold1"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "group": "configFromData",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "applyTo": {
+                        "id": "byName",
+                        "options": "metric"
+                      },
+                      "configRefId": "Config Inline",
+                      "mappings": [
+                        {
+                          "fieldName": "color",
+                          "handlerKey": "color"
+                        },
+                        {
+                          "fieldName": "unit",
+                          "handlerKey": "unit"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "group": "configFromData",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "applyTo": {
+                        "id": "byName",
+                        "options": "metric"
+                      },
+                      "configRefId": "Data",
+                      "mappings": [
+                        {
+                          "fieldName": "metric",
+                          "handlerArguments": {
+                            "threshold": {
+                              "color": "red"
+                            }
+                          },
+                          "handlerKey": "threshold1",
+                          "reducerId": "mean"
+                        },
+                        {
+                          "fieldName": "created_at",
+                          "handlerKey": "__ignore"
+                        },
+                        {
+                          "fieldName": "placeholder",
+                          "handlerKey": "__ignore"
+                        }
+                      ]
+                    }
+                  }
                 }
-              },
-              "right": {
-                "fixed": "0"
-              }
-            },
-            "mode": "binary",
-            "reduce": {
-              "reducer": "sum"
-            }
-          }
-        },
-        {
-          "id": "configFromData",
-          "options": {
-            "applyTo": {
-              "id": "byName",
-              "options": "placeholder"
-            },
-            "configRefId": "Config File",
-            "mappings": [
-              {
-                "fieldName": "expected",
-                "handlerArguments": {
-                  "threshold": {
-                    "color": "green"
-                  }
-                },
-                "handlerKey": "threshold1"
-              },
-              {
-                "fieldName": "guaranteed",
-                "handlerArguments": {
-                  "threshold": {
-                    "color": "yellow"
-                  }
-                },
-                "handlerKey": "threshold1"
-              }
-            ]
-          }
-        },
-        {
-          "id": "configFromData",
-          "options": {
-            "applyTo": {
-              "id": "byName",
-              "options": "metric"
-            },
-            "configRefId": "Config Inline",
-            "mappings": [
-              {
-                "fieldName": "color",
-                "handlerKey": "color"
-              },
-              {
-                "fieldName": "unit",
-                "handlerKey": "unit"
-              }
-            ]
-          }
-        },
-        {
-          "id": "configFromData",
-          "options": {
-            "applyTo": {
-              "id": "byName",
-              "options": "metric"
-            },
-            "configRefId": "Data",
-            "mappings": [
-              {
-                "fieldName": "metric",
-                "handlerArguments": {
-                  "threshold": {
-                    "color": "red"
-                  }
-                },
-                "handlerKey": "threshold1",
-                "reducerId": "mean"
-              },
-              {
-                "fieldName": "created_at",
-                "handlerKey": "__ignore"
-              },
-              {
-                "fieldName": "placeholder",
-                "handlerKey": "__ignore"
-              }
-            ]
-          }
-        }
-      ],
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "datasource",
-        "uid": "-- Mixed --"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "displayName": "-",
-          "fieldMinMax": false,
-          "mappings": [],
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 5,
-        "x": 19,
-        "y": 1
-      },
-      "options": {
-        "minVizHeight": 75,
-        "minVizWidth": 75,
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "firstNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": false,
-        "sizing": "auto",
-        "text": {
-          "titleSize": 15
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "speedtest"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT\n  CASE\n    WHEN ${metric:singlequote} IN ('download', 'upload') THEN ${metric:raw} * 8.0 / 1000.0 / 1000.0\n    ELSE ${metric:raw}\n  END AS metric,\n  created_at\nFROM results\nWHERE \n  status = 'completed'\n  AND $__timeFilter(created_at)\nORDER BY created_at DESC ",
-          "refId": "Data"
-        },
-        {
-          "columns": [],
-          "dataset": "speedtest",
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "config"
-          },
-          "editorMode": "builder",
-          "filters": [],
-          "format": "table",
-          "global_query_id": "",
-          "parser": "backend",
-          "rawSql": "",
-          "refId": "Config File",
-          "referenceName": "config.json",
-          "root_selector": "$.speedtest.${metric:raw}",
-          "source": "reference",
-          "type": "json",
-          "url": "",
-          "url_options": {
-            "data": "",
-            "method": "GET"
-          }
-        },
-        {
-          "columns": [],
-          "data": "{\n  \"download\": {\n    \"color\": \"blue\",\n    \"unit\": \"Mbps\"\n  },\n  \"upload\": {\n    \"color\": \"purple\",\n    \"unit\": \"Mbps\"\n  },\n  \"ping\": {\n    \"color\": \"green\",\n    \"unit\": \"ms\"\n  }\n}",
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "config"
-          },
-          "filters": [],
-          "format": "table",
-          "global_query_id": "",
-          "parser": "backend",
-          "refId": "Config Inline",
-          "root_selector": "$.${metric:raw}",
-          "source": "inline",
-          "type": "json",
-          "url": "",
-          "url_options": {
-            "data": "",
-            "method": "GET"
-          }
-        }
-      ],
-      "title": "",
-      "transformations": [
-        {
-          "id": "configFromData",
-          "options": {
-            "applyTo": {
-              "id": "byName",
-              "options": "metric"
-            },
-            "configRefId": "Config File",
-            "mappings": [
-              {
-                "fieldName": "expected",
-                "handlerKey": "max"
-              },
-              {
-                "fieldName": "guaranteed",
-                "handlerKey": "__ignore"
-              }
-            ]
-          }
-        },
-        {
-          "id": "configFromData",
-          "options": {
-            "applyTo": {
-              "id": "byName",
-              "options": "metric"
-            },
-            "configRefId": "Config Inline",
-            "mappings": [
-              {
-                "fieldName": "color",
-                "handlerKey": "color"
-              },
-              {
-                "fieldName": "unit",
-                "handlerKey": "unit"
-              }
-            ]
-          }
-        },
-        {
-          "id": "formatTime",
-          "options": {
-            "outputFormat": "[Latest: ] LTS, L",
-            "timeField": "created_at",
-            "timezone": "browser",
-            "useTimezone": true
-          }
-        },
-        {
-          "id": "configFromData",
-          "options": {
-            "applyTo": {
-              "id": "byName",
-              "options": "metric"
-            },
-            "configRefId": "Data",
-            "mappings": [
-              {
-                "fieldName": "created_at",
-                "handlerKey": "displayName",
-                "reducerId": "firstNotNull"
-              },
-              {
-                "fieldName": "metric",
-                "handlerKey": "__ignore",
-                "reducerId": "lastNotNull"
-              }
-            ]
-          }
-        }
-      ],
-      "type": "gauge"
-    },
-    {
-      "datasource": {
-        "type": "datasource",
-        "uid": "-- Mixed --"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "displayName": "Average",
-          "fieldMinMax": false,
-          "mappings": [],
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 2,
-        "w": 5,
-        "x": 19,
-        "y": 7
-      },
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "speedtest"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT\n  CASE\n    WHEN ${metric:singlequote} IN ('download', 'upload') THEN ${metric:raw} * 8.0 / 1000.0 / 1000.0\n    ELSE ${metric:raw}\n  END AS metric,\n  created_at\nFROM results\nWHERE \n  status = 'completed'\n  AND $__timeFilter(created_at)\nORDER BY created_at DESC ",
-          "refId": "Data"
-        },
-        {
-          "columns": [],
-          "data": "{\n  \"download\": {\n    \"color\": \"blue\",\n    \"unit\": \"Mbps\"\n  },\n  \"upload\": {\n    \"color\": \"purple\",\n    \"unit\": \"Mbps\"\n  },\n  \"ping\": {\n    \"color\": \"green\",\n    \"unit\": \"ms\"\n  }\n}",
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "config"
-          },
-          "filters": [],
-          "format": "table",
-          "global_query_id": "",
-          "parser": "backend",
-          "refId": "Config Inline",
-          "root_selector": "$.${metric:raw}",
-          "source": "inline",
-          "type": "json",
-          "url": "",
-          "url_options": {
-            "data": "",
-            "method": "GET"
-          }
-        }
-      ],
-      "title": "",
-      "transformations": [
-        {
-          "id": "calculateField",
-          "options": {
-            "alias": "average",
-            "cumulative": {
-              "field": "metric",
-              "reducer": "mean"
-            },
-            "mode": "cumulativeFunctions",
-            "reduce": {
-              "reducer": "sum"
-            }
-          }
-        },
-        {
-          "id": "configFromData",
-          "options": {
-            "applyTo": {
-              "id": "byName",
-              "options": "average"
-            },
-            "configRefId": "Config Inline",
-            "mappings": [
-              {
-                "fieldName": "color",
-                "handlerKey": "color"
-              },
-              {
-                "fieldName": "unit",
-                "handlerKey": "unit"
-              }
-            ]
-          }
-        },
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "include": {
-              "names": [
-                "average"
               ]
             }
+          },
+          "description": "",
+          "id": 1,
+          "links": [],
+          "title": "",
+          "vizConfig": {
+            "group": "timeseries",
+            "kind": "VizConfig",
+            "spec": {
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "fixedColor": "blue",
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 10,
+                    "gradientMode": "hue",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "smooth",
+                    "lineWidth": 2,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "line"
+                    }
+                  },
+                  "displayName": "$metric",
+                  "min": 0,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      }
+                    ]
+                  }
+                },
+                "overrides": [
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "placeholder"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.lineWidth",
+                        "value": 0
+                      },
+                      {
+                        "id": "custom.fillOpacity",
+                        "value": 0
+                      },
+                      {
+                        "id": "custom.showPoints",
+                        "value": "never"
+                      },
+                      {
+                        "id": "custom.hideFrom",
+                        "value": {
+                          "legend": true,
+                          "tooltip": true,
+                          "viz": false
+                        }
+                      },
+                      {
+                        "id": "custom.axisPlacement",
+                        "value": "hidden"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "options": {
+                "annotations": {
+                  "clustering": -1,
+                  "multiLane": false
+                },
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": false
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              }
+            },
+            "version": "13.0.1"
           }
         }
-      ],
-      "type": "stat"
-    }
-  ],
-  "preload": false,
-  "refresh": "5m",
-  "schemaVersion": 42,
-  "templating": {
-    "list": [
-      {
-        "allowCustomValue": false,
-        "current": {
-          "text": [
-            "download",
-            "upload",
-            "ping"
-          ],
-          "value": [
-            "download",
-            "upload",
-            "ping"
-          ]
-        },
-        "hide": 2,
-        "includeAll": false,
-        "multi": true,
-        "name": "metric",
-        "options": [
-          {
-            "selected": true,
-            "text": "download",
-            "value": "download"
+      },
+      "latest": {
+        "kind": "Panel",
+        "spec": {
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "speedtest"
+                      },
+                      "group": "grafana-postgresql-datasource",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "editorMode": "code",
+                        "format": "table",
+                        "rawQuery": true,
+                        "rawSql": "SELECT\n  CASE\n    WHEN ${metric:singlequote} IN ('download', 'upload') THEN ${metric:raw} * 8.0 / 1000.0 / 1000.0\n    ELSE ${metric:raw}\n  END AS metric,\n  created_at\nFROM results\nWHERE \n  status = 'completed'\n  AND $__timeFilter(created_at)\nORDER BY created_at DESC "
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "Data"
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "config"
+                      },
+                      "group": "yesoreyeram-infinity-datasource",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "columns": [],
+                        "dataset": "speedtest",
+                        "editorMode": "builder",
+                        "filters": [],
+                        "format": "table",
+                        "global_query_id": "",
+                        "parser": "backend",
+                        "rawSql": "",
+                        "referenceName": "config.json",
+                        "root_selector": "$.speedtest.${metric:raw}",
+                        "source": "reference",
+                        "type": "json",
+                        "url": "",
+                        "url_options": {
+                          "data": "",
+                          "method": "GET"
+                        }
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "Config File"
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "config"
+                      },
+                      "group": "yesoreyeram-infinity-datasource",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "columns": [],
+                        "data": "{\n  \"download\": {\n    \"color\": \"blue\",\n    \"unit\": \"Mbps\"\n  },\n  \"upload\": {\n    \"color\": \"purple\",\n    \"unit\": \"Mbps\"\n  },\n  \"ping\": {\n    \"color\": \"green\",\n    \"unit\": \"ms\"\n  }\n}",
+                        "filters": [],
+                        "format": "table",
+                        "global_query_id": "",
+                        "parser": "backend",
+                        "root_selector": "$.${metric:raw}",
+                        "source": "inline",
+                        "type": "json",
+                        "url": "",
+                        "url_options": {
+                          "data": "",
+                          "method": "GET"
+                        }
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "Config Inline"
+                  }
+                }
+              ],
+              "queryOptions": {},
+              "transformations": [
+                {
+                  "group": "configFromData",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "applyTo": {
+                        "id": "byName",
+                        "options": "metric"
+                      },
+                      "configRefId": "Config File",
+                      "mappings": [
+                        {
+                          "fieldName": "expected",
+                          "handlerKey": "max"
+                        },
+                        {
+                          "fieldName": "guaranteed",
+                          "handlerKey": "__ignore"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "group": "configFromData",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "applyTo": {
+                        "id": "byName",
+                        "options": "metric"
+                      },
+                      "configRefId": "Config Inline",
+                      "mappings": [
+                        {
+                          "fieldName": "color",
+                          "handlerKey": "color"
+                        },
+                        {
+                          "fieldName": "unit",
+                          "handlerKey": "unit"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "group": "formatTime",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "outputFormat": "[Latest: ] LTS, L",
+                      "timeField": "created_at",
+                      "timezone": "browser",
+                      "useTimezone": true
+                    }
+                  }
+                },
+                {
+                  "group": "configFromData",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "applyTo": {
+                        "id": "byName",
+                        "options": "metric"
+                      },
+                      "configRefId": "Data",
+                      "mappings": [
+                        {
+                          "fieldName": "created_at",
+                          "handlerKey": "displayName",
+                          "reducerId": "firstNotNull"
+                        },
+                        {
+                          "fieldName": "metric",
+                          "handlerKey": "__ignore",
+                          "reducerId": "lastNotNull"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
           },
-          {
-            "selected": true,
-            "text": "upload",
-            "value": "upload"
-          },
-          {
-            "selected": true,
-            "text": "ping",
-            "value": "ping"
+          "description": "",
+          "id": 2,
+          "links": [],
+          "title": "",
+          "vizConfig": {
+            "group": "gauge",
+            "kind": "VizConfig",
+            "spec": {
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "displayName": "-",
+                  "fieldMinMax": false,
+                  "min": 0,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      }
+                    ]
+                  }
+                },
+                "overrides": []
+              },
+              "options": {
+                "barShape": "flat",
+                "barWidthFactor": 0.5,
+                "effects": {
+                  "barGlow": false,
+                  "centerGlow": false,
+                  "gradient": true
+                },
+                "endpointMarker": "point",
+                "minVizHeight": 75,
+                "minVizWidth": 75,
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "firstNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "segmentCount": 1,
+                "segmentSpacing": 0.3,
+                "shape": "gauge",
+                "showThresholdLabels": false,
+                "showThresholdMarkers": false,
+                "sizing": "auto",
+                "sparkline": true,
+                "text": {
+                  "titleSize": 15
+                },
+                "textMode": "auto"
+              }
+            },
+            "version": "13.0.1"
           }
-        ],
-        "query": "download, upload, ping",
-        "type": "custom",
-        "valuesFormat": "csv"
+        }
+      },
+      "average": {
+        "kind": "Panel",
+        "spec": {
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "speedtest"
+                      },
+                      "group": "grafana-postgresql-datasource",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "editorMode": "code",
+                        "format": "table",
+                        "rawQuery": true,
+                        "rawSql": "SELECT\n  CASE\n    WHEN ${metric:singlequote} IN ('download', 'upload') THEN ${metric:raw} * 8.0 / 1000.0 / 1000.0\n    ELSE ${metric:raw}\n  END AS metric,\n  created_at\nFROM results\nWHERE \n  status = 'completed'\n  AND $__timeFilter(created_at)\nORDER BY created_at DESC "
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "Data"
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "config"
+                      },
+                      "group": "yesoreyeram-infinity-datasource",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "columns": [],
+                        "data": "{\n  \"download\": {\n    \"color\": \"blue\",\n    \"unit\": \"Mbps\"\n  },\n  \"upload\": {\n    \"color\": \"purple\",\n    \"unit\": \"Mbps\"\n  },\n  \"ping\": {\n    \"color\": \"green\",\n    \"unit\": \"ms\"\n  }\n}",
+                        "filters": [],
+                        "format": "table",
+                        "global_query_id": "",
+                        "parser": "backend",
+                        "root_selector": "$.${metric:raw}",
+                        "source": "inline",
+                        "type": "json",
+                        "url": "",
+                        "url_options": {
+                          "data": "",
+                          "method": "GET"
+                        }
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "Config Inline"
+                  }
+                }
+              ],
+              "queryOptions": {},
+              "transformations": [
+                {
+                  "group": "calculateField",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "alias": "average",
+                      "cumulative": {
+                        "field": "metric",
+                        "reducer": "mean"
+                      },
+                      "mode": "cumulativeFunctions",
+                      "reduce": {
+                        "reducer": "sum"
+                      }
+                    }
+                  }
+                },
+                {
+                  "group": "configFromData",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "applyTo": {
+                        "id": "byName",
+                        "options": "average"
+                      },
+                      "configRefId": "Config Inline",
+                      "mappings": [
+                        {
+                          "fieldName": "color",
+                          "handlerKey": "color"
+                        },
+                        {
+                          "fieldName": "unit",
+                          "handlerKey": "unit"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "group": "filterFieldsByName",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "include": {
+                        "names": [
+                          "average"
+                        ]
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "description": "",
+          "id": 3,
+          "links": [],
+          "title": "",
+          "vizConfig": {
+            "group": "stat",
+            "kind": "VizConfig",
+            "spec": {
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "displayName": "Average",
+                  "fieldMinMax": false,
+                  "min": 0,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      }
+                    ]
+                  }
+                },
+                "overrides": []
+              },
+              "options": {
+                "colorMode": "value",
+                "graphMode": "none",
+                "justifyMode": "center",
+                "orientation": "auto",
+                "percentChangeColorMode": "standard",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showPercentChange": false,
+                "textMode": "auto",
+                "wideLayout": true
+              }
+            },
+            "version": "13.0.1"
+          }
+        }
+      }
+    },
+    "layout": {
+      "kind": "RowsLayout",
+      "spec": {
+        "rows": [
+          {
+            "kind": "RowsLayoutRow",
+            "spec": {
+              "collapse": false,
+              "layout": {
+                "kind": "GridLayout",
+                "spec": {
+                  "items": [
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "chart"
+                        },
+                        "height": 8,
+                        "width": 19,
+                        "x": 0,
+                        "y": 0
+                      }
+                    },
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "latest"
+                        },
+                        "height": 6,
+                        "width": 5,
+                        "x": 19,
+                        "y": 0
+                      }
+                    },
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "average"
+                        },
+                        "height": 2,
+                        "width": 5,
+                        "x": 19,
+                        "y": 6
+                      }
+                    }
+                  ]
+                }
+              },
+              "repeat": {
+                "mode": "variable",
+                "value": "metric"
+              },
+              "title": "$metric"
+            }
+          }
+        ]
+      }
+    },
+    "links": [],
+    "liveNow": false,
+    "preload": false,
+    "tags": [],
+    "timeSettings": {
+      "autoRefresh": "5m",
+      "fiscalYearStartMonth": 0,
+      "from": "now-24h",
+      "hideTimepicker": false,
+      "timezone": "browser",
+      "to": "now"
+    },
+    "title": "Speedtest Overview",
+    "variables": [
+      {
+        "kind": "CustomVariable",
+        "spec": {
+          "allowCustomValue": false,
+          "current": {
+            "text": [
+              "download",
+              "upload",
+              "ping"
+            ],
+            "value": [
+              "download",
+              "upload",
+              "ping"
+            ]
+          },
+          "hide": "hideVariable",
+          "includeAll": false,
+          "multi": true,
+          "name": "metric",
+          "options": [
+            {
+              "selected": true,
+              "text": "download",
+              "value": "download"
+            },
+            {
+              "selected": true,
+              "text": "upload",
+              "value": "upload"
+            },
+            {
+              "selected": true,
+              "text": "ping",
+              "value": "ping"
+            }
+          ],
+          "query": "download, upload, ping",
+          "skipUrlSync": false,
+          "valuesFormat": "csv"
+        }
       }
     ]
-  },
-  "time": {
-    "from": "now-24h",
-    "to": "now"
-  },
-  "timepicker": {},
-  "timezone": "browser",
-  "title": "Speedtest Overview"
+  }
 }
