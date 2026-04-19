@@ -545,10 +545,10 @@
                 "overrides": []
               },
               "options": {
-                "barShape": "flat",
+                "barShape": "rounded",
                 "barWidthFactor": 0.5,
                 "effects": {
-                  "barGlow": false,
+                  "barGlow": true,
                   "centerGlow": false,
                   "gradient": true
                 },
@@ -569,10 +569,8 @@
                 "showThresholdLabels": false,
                 "showThresholdMarkers": false,
                 "sizing": "auto",
-                "sparkline": true,
-                "text": {
-                  "titleSize": 15
-                },
+                "sparkline": false,
+                "text": {},
                 "textMode": "auto"
               }
             },
