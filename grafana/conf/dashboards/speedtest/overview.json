@@ -2,6 +2,34 @@
   "kind": "Dashboard",
   "apiVersion": "dashboard.grafana.app/v2",
   "spec": {
+    "annotations": [
+      {
+        "kind": "AnnotationQuery",
+        "spec": {
+          "enable": true,
+          "hide": false,
+          "iconColor": "red",
+          "name": "Failures",
+          "placement": "inControlsMenu",
+          "query": {
+            "datasource": {
+              "name": "speedtest"
+            },
+            "group": "grafana-postgresql-datasource",
+            "kind": "DataQuery",
+            "spec": {
+              "editorMode": "code",
+              "format": "table",
+              "rawQuery": true,
+              "rawSql": "SELECT\n  created_at,\n  data->>'message'\nFROM results\nWHERE\n  status = 'failed'\n  AND $__timeFilter(created_at)\nORDER BY created_at DESC",
+              "tags": [],
+              "type": "dashboard"
+            },
+            "version": "v0"
+          }
+        }
+      }
+    ],
     "cursorSync": "Tooltip",
     "editable": false,
     "elements": {
