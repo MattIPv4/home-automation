@@ -843,7 +843,32 @@
         ]
       }
     },
-    "links": [],
+    "links": [
+      {
+        "asDropdown": true,
+        "icon": "dashboard",
+        "includeVars": false,
+        "keepTime": true,
+        "tags": [],
+        "targetBlank": false,
+        "title": "Smokeping Overview",
+        "tooltip": "",
+        "type": "link",
+        "url": "/d/smokeping-overview"
+      },
+      {
+        "asDropdown": true,
+        "icon": "external link",
+        "includeVars": false,
+        "keepTime": false,
+        "tags": [],
+        "targetBlank": true,
+        "title": "Speedtest UI",
+        "tooltip": "",
+        "type": "link",
+        "url": "http://raspberrypi.local:8081"
+      }
+    ],
     "liveNow": false,
     "preload": false,
     "tags": [],

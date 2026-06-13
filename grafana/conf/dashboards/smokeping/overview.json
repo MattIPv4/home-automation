@@ -255,7 +255,32 @@
         ]
       }
     },
-    "links": [],
+    "links": [
+      {
+        "asDropdown": true,
+        "icon": "dashboard",
+        "includeVars": false,
+        "keepTime": true,
+        "tags": [],
+        "targetBlank": false,
+        "title": "Speedtest Overview",
+        "tooltip": "",
+        "type": "link",
+        "url": "/d/speedtest-overview"
+      },
+      {
+        "asDropdown": true,
+        "icon": "external link",
+        "includeVars": false,
+        "keepTime": false,
+        "tags": [],
+        "targetBlank": true,
+        "title": "Smokeping UI",
+        "tooltip": "",
+        "type": "link",
+        "url": "http://raspberrypi.local:8082"
+      }
+    ],
     "liveNow": false,
     "preload": false,
     "tags": [],
