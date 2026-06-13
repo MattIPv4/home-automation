@@ -1,0 +1,9 @@
+*** General ***
+
+owner    = admin@localhost
+contact  = admin@localhost
+mailhost = localhost
+cgiurl   = http://raspberrypi.local:8082/smokeping/smokeping.cgi
+syslogfacility = local0
+
+@include /config/pathnames
