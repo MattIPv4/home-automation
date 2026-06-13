@@ -1,6 +1,10 @@
 {
   "kind": "Dashboard",
   "apiVersion": "dashboard.grafana.app/v2",
+  "metadata": {
+    "name": "postgres-stats",
+    "uid": "postgres-stats"
+  },
   "spec": {
     "cursorSync": "Off",
     "editable": false,

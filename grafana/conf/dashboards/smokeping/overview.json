@@ -1,6 +1,10 @@
 {
   "apiVersion": "dashboard.grafana.app/v2",
   "kind": "Dashboard",
+  "metadata": {
+    "name": "smokeping-overview",
+    "uid": "smokeping-overview"
+  },
   "spec": {
     "cursorSync": "Off",
     "editable": false,

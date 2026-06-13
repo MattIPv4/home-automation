@@ -1,6 +1,10 @@
 {
   "kind": "Dashboard",
   "apiVersion": "dashboard.grafana.app/v2",
+  "metadata": {
+    "name": "speedtest-overview",
+    "uid": "speedtest-overview"
+  },
   "spec": {
     "annotations": [
       {
