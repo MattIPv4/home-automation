@@ -1,0 +1,328 @@
+{
+  "apiVersion": "dashboard.grafana.app/v2",
+  "kind": "Dashboard",
+  "spec": {
+    "cursorSync": "Off",
+    "editable": false,
+    "elements": {
+      "graph": {
+        "kind": "Panel",
+        "spec": {
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "yesoreyeram-infinity-datasource",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "smokeping"
+                      },
+                      "spec": {
+                        "columns": [],
+                        "filters": [],
+                        "format": "table",
+                        "global_query_id": "",
+                        "parser": "jq-backend",
+                        "root_selector": "map({ target, datapoint: .datapoints[] })[]\n| {\n  metric: .target | sub(\"^:?(?<name>.+):(?<metric>[^:]+)$\"; \"\\(.metric)\"),\n  value: .datapoint.[0],\n  time: .datapoint.[1],\n}",
+                        "source": "url",
+                        "type": "json",
+                        "url": "/query",
+                        "url_options": {
+                          "body_content_type": "application/json",
+                          "body_type": "raw",
+                          "data": "{\n  \"targets\": ${Metric.targets:json},\n  \"range\": {\n    \"from\": \"${__timeFrom:date}\",\n    \"to\": \"${__timeTo:date}\"\n  },\n  \"intervalMs\": $__interval_ms,\n  \"interval\": \"$__interval\"\n}",
+                          "method": "POST"
+                        }
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [
+                {
+                  "kind": "Transformation",
+                  "group": "convertFieldType",
+                  "spec": {
+                    "options": {
+                      "conversions": [
+                        {
+                          "destinationType": "time",
+                          "targetField": "time"
+                        }
+                      ],
+                      "fields": {}
+                    }
+                  }
+                },
+                {
+                  "kind": "Transformation",
+                  "group": "sortBy",
+                  "spec": {
+                    "options": {
+                      "fields": {},
+                      "sort": [
+                        {
+                          "desc": true,
+                          "field": "metric"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "kind": "Transformation",
+                  "group": "partitionByValues",
+                  "spec": {
+                    "options": {
+                      "fields": [
+                        "metric"
+                      ],
+                      "keepFields": false,
+                      "naming": {
+                        "asLabels": false
+                      }
+                    }
+                  }
+                }
+              ],
+              "queryOptions": {}
+            }
+          },
+          "description": "",
+          "id": 1,
+          "links": [],
+          "title": "${Metric.name}",
+          "vizConfig": {
+            "group": "timeseries",
+            "kind": "VizConfig",
+            "spec": {
+              "fieldConfig": {
+                "defaults": {
+                  "displayName": "${__series.name}",
+                  "unit": "s",
+                  "min": 0,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "shades"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "left",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineStyle": {
+                      "fill": "solid"
+                    },
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "never",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  }
+                },
+                "overrides": [
+                  {
+                    "matcher": {
+                      "id": "byRegexp",
+                      "scope": "series",
+                      "options": "/median/"
+                    },
+                    "properties": [
+                      {
+                        "id": "color",
+                        "value": {
+                          "fixedColor": "green",
+                          "mode": "fixed"
+                        }
+                      },
+                      {
+                        "id": "custom.lineWidth",
+                        "value": 3
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byRegexp",
+                      "scope": "series",
+                      "options": "/loss/"
+                    },
+                    "properties": [
+                      {
+                        "id": "unit",
+                        "value": "locale"
+                      },
+                      {
+                        "id": "color",
+                        "value": {
+                          "mode": "continuous-GrYlRd",
+                          "seriesBy": "last"
+                        }
+                      },
+                      {
+                        "id": "custom.axisPlacement",
+                        "value": "hidden"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "options": {
+                "annotations": {
+                  "clustering": -1,
+                  "multiLane": false
+                },
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": false
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "multi",
+                  "sort": "none"
+                }
+              }
+            },
+            "version": "13.0.1"
+          }
+        }
+      }
+    },
+    "layout": {
+      "kind": "AutoGridLayout",
+      "spec": {
+        "maxColumnCount": 3,
+        "columnWidthMode": "standard",
+        "rowHeightMode": "standard",
+        "items": [
+          {
+            "kind": "AutoGridLayoutItem",
+            "spec": {
+              "element": {
+                "kind": "ElementReference",
+                "name": "graph"
+              },
+              "repeat": {
+                "mode": "variable",
+                "value": "Metric"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "links": [],
+    "liveNow": false,
+    "preload": false,
+    "tags": [],
+    "timeSettings": {
+      "autoRefresh": "",
+      "fiscalYearStartMonth": 0,
+      "from": "now-24h",
+      "hideTimepicker": false,
+      "timezone": "browser",
+      "to": "now"
+    },
+    "title": "Smokeping Overview",
+    "variables": [
+      {
+        "kind": "QueryVariable",
+        "spec": {
+          "name": "Metric",
+          "current": {
+            "text": "All",
+            "value": [
+              "$__all"
+            ]
+          },
+          "hide": "hideVariable",
+          "refresh": "onDashboardLoad",
+          "skipUrlSync": false,
+          "query": {
+            "kind": "DataQuery",
+            "group": "yesoreyeram-infinity-datasource",
+            "version": "v0",
+            "datasource": {
+              "name": "smokeping"
+            },
+            "spec": {
+              "infinityQuery": {
+                "columns": [],
+                "computed_columns": [],
+                "data": "",
+                "filters": [],
+                "format": "table",
+                "parser": "jq-backend",
+                "refId": "",
+                "root_selector": "[\n  .[] | {\n    name: . | sub(\"^:?(?<name>.+):(?<metric>[^:]+)$\"; \"\\(.name)\"),\n    target: .,\n  }\n]\n| group_by(.name)[]\n| {\n  name: .[0].name,\n  targets: [ .[] | { target: .target } ],\n}",
+                "source": "url",
+                "type": "json",
+                "url": "/search",
+                "url_options": {
+                  "body_content_type": "application/json",
+                  "body_type": "raw",
+                  "data": "{\n  \"target\": \":\"\n}",
+                  "method": "POST"
+                }
+              },
+              "meta": {
+                "textField": "name",
+                "valueField": "name"
+              },
+              "queryType": "infinity",
+              "refId": "variable"
+            }
+          },
+          "regex": "",
+          "regexApplyTo": "value",
+          "sort": "disabled",
+          "definition": "",
+          "options": [],
+          "multi": false,
+          "includeAll": true,
+          "allowCustomValue": false
+        }
+      }
+    ]
+  }
+}

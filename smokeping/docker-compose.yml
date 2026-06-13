@@ -11,3 +11,20 @@ services:
             - 'TZ=Europe/London'
         image: 'lscr.io/linuxserver/smokeping:latest'
         restart: unless-stopped
+
+    smokeping-rrd:
+        container_name: smokeping-rrd
+        hostname: smokeping-rrd
+        volumes:
+            - './data:/data'
+        build:
+            context: https://github.com/doublemarket/grafana-rrd-server.git
+        entrypoint: ["/grafana-rrd-server", "-r", "/data"]
+        restart: unless-stopped
+        networks:
+            - home-automation
+
+networks:
+    home-automation:
+        driver: bridge
+        name: home-automation

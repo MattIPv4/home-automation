@@ -1,0 +1,17 @@
+apiVersion: 1
+prune: true
+
+datasources:
+  - name: Smokeping
+    uid: smokeping
+
+    type: yesoreyeram-infinity-datasource
+    access: proxy
+    url: http://smokeping-rrd:9000
+
+    jsonData:
+      allowedHosts:
+        - http://smokeping-rrd:9000
+
+    version: 1
+    editable: false
