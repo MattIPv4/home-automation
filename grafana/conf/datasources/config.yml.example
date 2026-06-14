@@ -26,6 +26,10 @@ datasources:
                   "expected": null,
                   "guaranteed": null
                 }
+              },
+              "links": {
+                "speedtest": "http://raspberrypi.local:8081",
+                "smokeping": "http://raspberrypi.local:8082"
               }
             }
 

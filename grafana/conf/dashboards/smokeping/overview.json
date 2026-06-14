@@ -39,7 +39,7 @@
                         "url_options": {
                           "body_content_type": "application/json",
                           "body_type": "raw",
-                          "data": "{\n  \"targets\": ${Metric.targets:json},\n  \"range\": {\n    \"from\": \"${__timeFrom:date}\",\n    \"to\": \"${__timeTo:date}\"\n  },\n  \"intervalMs\": $__interval_ms,\n  \"interval\": \"$__interval\"\n}",
+                          "data": "{\n  \"targets\": ${metric.targets:json},\n  \"range\": {\n    \"from\": \"${__timeFrom:date}\",\n    \"to\": \"${__timeTo:date}\"\n  },\n  \"intervalMs\": $__interval_ms,\n  \"interval\": \"$__interval\"\n}",
                           "method": "POST"
                         }
                       }
@@ -102,7 +102,7 @@
           "description": "",
           "id": 1,
           "links": [],
-          "title": "${Metric.name}",
+          "title": "${metric.name}",
           "vizConfig": {
             "group": "timeseries",
             "kind": "VizConfig",
@@ -198,7 +198,7 @@
                         "id": "color",
                         "value": {
                           "mode": "continuous-GrYlRd",
-                          "seriesBy": "last"
+                          "seriesBy": "max"
                         }
                       },
                       {
@@ -248,7 +248,7 @@
               },
               "repeat": {
                 "mode": "variable",
-                "value": "Metric"
+                "value": "metric"
               }
             }
           }
@@ -278,7 +278,7 @@
         "title": "Smokeping UI",
         "tooltip": "",
         "type": "link",
-        "url": "http://raspberrypi.local:8082"
+        "url": "${link}"
       }
     ],
     "liveNow": false,
@@ -297,7 +297,7 @@
       {
         "kind": "QueryVariable",
         "spec": {
-          "name": "Metric",
+          "name": "metric",
           "current": {
             "text": "All",
             "value": [
@@ -306,7 +306,7 @@
           },
           "hide": "hideVariable",
           "refresh": "onDashboardLoad",
-          "skipUrlSync": false,
+          "skipUrlSync": true,
           "query": {
             "kind": "DataQuery",
             "group": "yesoreyeram-infinity-datasource",
@@ -349,6 +349,56 @@
           "options": [],
           "multi": false,
           "includeAll": true,
+          "allowCustomValue": false
+        }
+      },
+      {
+        "kind": "QueryVariable",
+        "spec": {
+          "name": "link",
+          "current": {
+            "text": "",
+            "value": ""
+          },
+          "hide": "hideVariable",
+          "refresh": "onDashboardLoad",
+          "skipUrlSync": true,
+          "query": {
+            "kind": "DataQuery",
+            "group": "yesoreyeram-infinity-datasource",
+            "version": "v0",
+            "datasource": {
+              "name": "config"
+            },
+            "spec": {
+              "infinityQuery": {
+                "columns": [],
+                "data": "",
+                "filters": [],
+                "format": "table",
+                "parser": "backend",
+                "refId": "",
+                "referenceName": "config.json",
+                "root_selector": "$.links.smokeping",
+                "source": "reference",
+                "type": "json",
+                "url": "",
+                "url_options": {
+                  "data": "",
+                  "method": "GET"
+                }
+              },
+              "queryType": "infinity",
+              "refId": "variable"
+            }
+          },
+          "regex": "",
+          "regexApplyTo": "value",
+          "sort": "disabled",
+          "definition": "",
+          "options": [],
+          "multi": false,
+          "includeAll": false,
           "allowCustomValue": false
         }
       }

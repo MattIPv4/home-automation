@@ -866,7 +866,7 @@
         "title": "Speedtest UI",
         "tooltip": "",
         "type": "link",
-        "url": "http://raspberrypi.local:8081"
+        "url": "${link}"
       }
     ],
     "liveNow": false,
@@ -922,6 +922,56 @@
           "query": "download, upload, ping",
           "skipUrlSync": false,
           "valuesFormat": "csv"
+        }
+      },
+      {
+        "kind": "QueryVariable",
+        "spec": {
+          "name": "link",
+          "current": {
+            "text": "",
+            "value": ""
+          },
+          "hide": "hideVariable",
+          "refresh": "onDashboardLoad",
+          "skipUrlSync": true,
+          "query": {
+            "kind": "DataQuery",
+            "group": "yesoreyeram-infinity-datasource",
+            "version": "v0",
+            "datasource": {
+              "name": "config"
+            },
+            "spec": {
+              "infinityQuery": {
+                "columns": [],
+                "data": "",
+                "filters": [],
+                "format": "table",
+                "parser": "backend",
+                "refId": "",
+                "referenceName": "config.json",
+                "root_selector": "$.links.speedtest",
+                "source": "reference",
+                "type": "json",
+                "url": "",
+                "url_options": {
+                  "data": "",
+                  "method": "GET"
+                }
+              },
+              "queryType": "infinity",
+              "refId": "variable"
+            }
+          },
+          "regex": "",
+          "regexApplyTo": "value",
+          "sort": "disabled",
+          "definition": "",
+          "options": [],
+          "multi": false,
+          "includeAll": false,
+          "allowCustomValue": false
         }
       }
     ]

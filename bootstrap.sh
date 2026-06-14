@@ -57,6 +57,8 @@ sudo systemctl status speedtest.service
 sudo ufw allow 8081
 
 # Enable and expose home automation smokeping
+cp /opt/home-automation/smokeping/conf/General.example /opt/home-automation/smokeping/conf/General
+nano /opt/home-automation/smokeping/conf/General || true
 sudo systemctl enable /opt/home-automation/smokeping/smokeping.service
 sudo systemctl start smokeping.service
 sudo systemctl status smokeping.service

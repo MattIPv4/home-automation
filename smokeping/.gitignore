@@ -3,6 +3,6 @@
 /conf/*
 !/conf/Alerts
 !/conf/Database
-!/conf/General
+!/conf/General.example
 !/conf/Probes
 !/conf/Targets
