@@ -1,3 +1,4 @@
 /.idea/
-/.vscode/
+/.vscode/*
+!/.vscode/c_cpp_properties.json
 .DS_Store
