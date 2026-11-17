@@ -17,13 +17,13 @@ public:
 
 private:
   struct TargetState {
-    BlindState confirmed = BlindState::Unknown;
-    BlindState pending = BlindState::None;
-    BlindState queued = BlindState::None;
+    BlindState confirmed = BlindState::Unknown; // Estimated position after the last completed move.
+    BlindState pending = BlindState::None;      // Destination of the current move.
+    BlindState queued = BlindState::None;       // Requested destination after the current move.
     bool moving = false;
   };
 
-  enum class StepType : uint8_t { Press, Complete };
+  enum class StepType : uint8_t { InitialPress, Press, Complete };
 
   struct ScheduledStep {
     StepType type;
@@ -41,14 +41,18 @@ private:
   void commitState(uint8_t target, BlindState state);
   void runNextCommand();
   void planTransition(uint8_t target, BlindState current, BlindState desired);
+  void scheduleInitialPress(uint8_t target, Direction direction, const char* reason);
   void schedulePress(uint8_t target, Direction direction, uint32_t delayMs, const char* reason);
   void scheduleCompletion(uint8_t target, BlindState state, uint32_t delayMs);
   void enqueue(ScheduledStep step);
+  void removeFirstStep();
+  bool finishPress();
 
   BlindRadio& radio_;
   const TimingSettings& timing_;
   TargetState targets_[Config::TARGET_COUNT];
   ScheduledStep steps_[MAX_QUEUED_STEPS];
-  size_t queueHead_ = 0;
+  // The current step is always steps_[0]; remaining steps follow in execution order.
   size_t queueCount_ = 0;
+  bool pressInProgress_ = false;
 };

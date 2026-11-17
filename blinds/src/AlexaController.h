@@ -22,8 +22,11 @@ private:
   void connectWifi();
   void startAlexa();
   void queueCommand(uint8_t deviceId, bool on, uint8_t brightness);
+  bool hasPendingCommand(uint8_t target) const;
   void removePendingCommand(uint8_t target);
+  void dispatchPendingCommand();
   void syncStates();
+  void updateNetwork();
 
   BlindController& controller_;
   WebServer server_{80};

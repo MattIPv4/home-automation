@@ -96,13 +96,13 @@ void AlexaController::queueCommand(uint8_t deviceId, bool on, uint8_t brightness
   // Even an unsupported percentage must cancel an earlier provisional power-on request.
   removePendingCommand(target);
 
+  // Hue/Alexa can encode 0% as 0/1, 50% as 127/128, and 100% as 254/255.
   BlindState state;
-  if (!on || brightness == 0) {
+  if (!on || brightness <= 1) {
     state = BlindState::Closed;
   } else if (brightness == 127 || brightness == 128) {
-    // Hue/Alexa can encode 50% as 127/128 and 100% as 254/255.
     state = BlindState::Day;
-  } else if (brightness == 254 || brightness == 255) {
+  } else if (brightness >= 254) {
     state = BlindState::Open;
   } else {
     Serial.printf(
@@ -114,6 +114,15 @@ void AlexaController::queueCommand(uint8_t deviceId, bool on, uint8_t brightness
   // One entry per target bounds the queue; replacing a command moves it to the back.
   pendingCommands_[pendingCommandCount_++] = {target, state, millis()};
   Serial.printf("[ALEXA] Pending target %u (on=%u, brightness=%u)\n", target, on, brightness);
+}
+
+bool AlexaController::hasPendingCommand(uint8_t target) const {
+  for (size_t i = 0; i < pendingCommandCount_; i++) {
+    if (target == 0 || pendingCommands_[i].target == 0 || pendingCommands_[i].target == target) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void AlexaController::removePendingCommand(uint8_t target) {
@@ -130,18 +139,21 @@ void AlexaController::removePendingCommand(uint8_t target) {
   }
 }
 
+void AlexaController::dispatchPendingCommand() {
+  if (pendingCommandCount_ > 0 &&
+      millis() - pendingCommands_[0].receivedAtMs >= Config::ALEXA_COMMAND_SETTLE_MS) {
+    const Command command = pendingCommands_[0];
+    removePendingCommand(command.target);
+    // Keep radio work outside the HTTP callback, and service HTTP again before the next move.
+    controller_.setState(command.target, command.state);
+  }
+}
+
 void AlexaController::syncStates() {
   for (size_t i = 0; i < Config::ALEXA_DEVICE_COUNT; i++) {
     const uint8_t target = Config::ALEXA_DEVICES[i].target;
-    bool commandPending = false;
-    for (size_t j = 0; j < pendingCommandCount_; j++) {
-      if (target == 0 || pendingCommands_[j].target == 0 || pendingCommands_[j].target == target) {
-        commandPending = true;
-        break;
-      }
-    }
     // Preserve remembered brightness between Alexa's separate power/brightness requests.
-    if (commandPending) {
+    if (hasPendingCommand(target)) {
       continue;
     }
 
@@ -176,13 +188,7 @@ void AlexaController::syncStates() {
   }
 }
 
-void AlexaController::update() {
-  if (!configured_) {
-    return;
-  }
-
-  syncStates();
-
+void AlexaController::updateNetwork() {
   const bool connected = WiFi.status() == WL_CONNECTED;
   if (connected != connected_) {
     connected_ = connected;
@@ -211,12 +217,14 @@ void AlexaController::update() {
     }
     connectWifi();
   }
+}
 
-  if (pendingCommandCount_ > 0 &&
-      millis() - pendingCommands_[0].receivedAtMs >= Config::ALEXA_COMMAND_SETTLE_MS) {
-    const Command command = pendingCommands_[0];
-    removePendingCommand(command.target);
-    // Keep radio work outside the HTTP callback, and service HTTP again before the next move.
-    controller_.setState(command.target, command.state);
+void AlexaController::update() {
+  if (!configured_) {
+    return;
   }
+
+  syncStates();
+  updateNetwork();
+  dispatchPendingCommand();
 }

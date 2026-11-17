@@ -84,9 +84,7 @@ void BlindController::enqueue(ScheduledStep step) {
     return;
   }
 
-  step.executeAtMs = millis() + step.delayMs;
-  const size_t slot = (queueHead_ + queueCount_) % MAX_QUEUED_STEPS;
-  steps_[slot] = step;
+  steps_[queueCount_] = step;
   queueCount_++;
 
   const char* action = step.type == StepType::Complete
@@ -94,6 +92,11 @@ void BlindController::enqueue(ScheduledStep step) {
                            : (step.direction == Direction::Up ? "UP" : "DOWN");
   Serial.printf("[QUEUE] Mask 0x%02X -> %s in %lu ms (%s)\n", Config::GROUP_MASKS[step.target],
                 action, step.delayMs, step.reason);
+}
+
+void BlindController::scheduleInitialPress(uint8_t target, Direction direction,
+                                           const char* reason) {
+  enqueue({StepType::InitialPress, target, direction, 0, 0, reason, BlindState::None});
 }
 
 void BlindController::schedulePress(uint8_t target, Direction direction, uint32_t delayMs,
@@ -119,28 +122,71 @@ void BlindController::runNextCommand() {
 }
 
 void BlindController::update() {
+  if (radio_.isTransmitting()) {
+    return;
+  }
+
+  if (!finishPress()) {
+    return;
+  }
+
   if (queueCount_ == 0) {
-    return;
-  }
-
-  const ScheduledStep& next = steps_[queueHead_];
-  // Signed subtraction keeps this deadline check working when millis() wraps.
-  if (static_cast<int32_t>(millis() - next.executeAtMs) < 0) {
-    return;
-  }
-
-  const ScheduledStep step = next;
-  queueHead_ = (queueHead_ + 1) % MAX_QUEUED_STEPS;
-  queueCount_--;
-
-  if (step.type == StepType::Press) {
-    radio_.sendPress(Config::GROUP_MASKS[step.target], step.direction, step.reason, step.delayMs);
-  } else {
-    commitState(step.target, step.finalState);
-    Serial.printf("[STATE] Target %u (0x%02X) settled at %s\n", step.target,
-                  Config::GROUP_MASKS[step.target], stateName(step.finalState));
     runNextCommand();
+    return;
   }
+
+  const ScheduledStep step = steps_[0];
+  // Signed subtraction keeps this deadline check working when millis() wraps.
+  if (step.type != StepType::InitialPress &&
+      static_cast<int32_t>(millis() - step.executeAtMs) < 0) {
+    return;
+  }
+
+  if (step.type != StepType::Complete) {
+    // Keep this step until the radio reports that the press has finished.
+    pressInProgress_ = radio_.sendPress(Config::GROUP_MASKS[step.target], step.direction,
+                                        step.reason, step.delayMs);
+    return;
+  }
+
+  removeFirstStep();
+  commitState(step.target, step.finalState);
+  Serial.printf("[STATE] Target %u (0x%02X) settled at %s\n", step.target,
+                Config::GROUP_MASKS[step.target], stateName(step.finalState));
+  runNextCommand();
+}
+
+bool BlindController::finishPress() {
+  // Consume raw-pulse results too, so the radio can accept its next request.
+  BlindRadio::TxResult result;
+  const bool hasResult = radio_.takeTxResult(result);
+  if (!pressInProgress_) {
+    return true;
+  }
+
+  const ScheduledStep step = steps_[0];
+  if (!hasResult || !result.succeeded) {
+    Serial.println(F("[ERR] RF press failed; cancelling the move and deferred commands."));
+    resetState(step.target);
+    return false;
+  }
+
+  pressInProgress_ = false;
+  removeFirstStep();
+  if (step.type == StepType::InitialPress) {
+    // All movement deadlines use the first press's actual finish time as their origin.
+    for (size_t i = 0; i < queueCount_; i++) {
+      steps_[i].executeAtMs = result.finishedAtMs + steps_[i].delayMs;
+    }
+  }
+  return true;
+}
+
+void BlindController::removeFirstStep() {
+  for (size_t i = 1; i < queueCount_; i++) {
+    steps_[i - 1] = steps_[i];
+  }
+  queueCount_--;
 }
 
 void BlindController::resetState(uint8_t target) {
@@ -149,10 +195,16 @@ void BlindController::resetState(uint8_t target) {
     return;
   }
 
-  queueHead_ = 0;
   queueCount_ = 0;
+  pressInProgress_ = false;
   for (TargetState& state : targets_) {
     state.queued = BlindState::None;
+    // Cancelling the global plan also invalidates any unfinished destinations.
+    if (state.moving) {
+      state.confirmed = BlindState::Unknown;
+      state.pending = BlindState::None;
+      state.moving = false;
+    }
   }
   commitState(target, BlindState::Unknown);
   Serial.printf("[STATE] Target %u (0x%02X) reset to UNKNOWN.\n", target,
@@ -172,7 +224,7 @@ void BlindController::setState(uint8_t target, BlindState desired) {
   const uint8_t mask = Config::GROUP_MASKS[target];
   TargetState& state = targets_[target];
 
-  if (anyMoveInProgress()) {
+  if (anyMoveInProgress() || radio_.isTransmitting()) {
     if (state.moving && state.pending == desired) {
       state.queued = BlindState::None;
       Serial.printf("[STATE] Target %u (0x%02X) already moving to %s\n", target, mask,
@@ -188,8 +240,9 @@ void BlindController::setState(uint8_t target, BlindState desired) {
       targets_[0].queued = BlindState::None;
     }
     state.queued = desired;
-    Serial.printf("[DEFER] Move in progress; queued Target %u (0x%02X) -> %s to run after settle\n",
-                  target, mask, stateName(desired));
+    Serial.printf(
+        "[DEFER] RF/move in progress; queued Target %u (0x%02X) -> %s to run after settle\n",
+        target, mask, stateName(desired));
     return;
   }
 
@@ -214,7 +267,6 @@ void BlindController::setState(uint8_t target, BlindState desired) {
 }
 
 void BlindController::planTransition(uint8_t target, BlindState current, BlindState desired) {
-  const uint8_t mask = Config::GROUP_MASKS[target];
   const uint32_t travelMs = timing_.travelMs;
   const uint32_t vaneMs = timing_.vaneMs;
 
@@ -222,53 +274,54 @@ void BlindController::planTransition(uint8_t target, BlindState current, BlindSt
   // not from the previous scheduled step.
   if (current == BlindState::Unknown) {
     // Double-DOWN homes to DAY without first opening the blinds.
-    radio_.sendPress(mask, Direction::Down, "Homing: first DOWN");
+    scheduleInitialPress(target, Direction::Down, "Homing: first DOWN");
     schedulePress(target, Direction::Down, travelMs, "Homing: second DOWN sets DAY");
 
     if (desired == BlindState::Day) {
       scheduleCompletion(target, desired, travelMs);
-    } else {
-      schedulePress(target, Direction::Up, travelMs + vaneMs, "Homing: UP closes vanes");
-      if (desired == BlindState::Closed) {
-        scheduleCompletion(target, desired, travelMs + (2 * vaneMs));
-      } else {
-        schedulePress(target, Direction::Up, travelMs + (2 * vaneMs),
-                      "Homing: second UP opens blind");
-        scheduleCompletion(target, desired, (2 * travelMs) + (2 * vaneMs));
-      }
+      return;
     }
+
+    schedulePress(target, Direction::Up, travelMs + vaneMs, "Homing: UP closes vanes");
+    if (desired == BlindState::Closed) {
+      scheduleCompletion(target, desired, travelMs + (2 * vaneMs));
+      return;
+    }
+
+    schedulePress(target, Direction::Up, travelMs + (2 * vaneMs), "Homing: second UP opens blind");
+    scheduleCompletion(target, desired, (2 * travelMs) + (2 * vaneMs));
     return;
   }
 
   switch (desired) {
   case BlindState::Open:
     if (current == BlindState::Day) {
-      radio_.sendPress(mask, Direction::Up, "DAY->OPEN: first UP closes vanes");
+      scheduleInitialPress(target, Direction::Up, "DAY->OPEN: first UP closes vanes");
       schedulePress(target, Direction::Up, vaneMs, "DAY->OPEN: second UP opens blind");
       scheduleCompletion(target, desired, vaneMs + travelMs);
     } else {
-      radio_.sendPress(mask, Direction::Up, "CLOSED->OPEN: UP opens blind");
+      scheduleInitialPress(target, Direction::Up, "CLOSED->OPEN: UP opens blind");
       scheduleCompletion(target, desired, travelMs);
     }
     break;
 
   case BlindState::Closed:
     if (current == BlindState::Day) {
-      radio_.sendPress(mask, Direction::Up, "DAY->CLOSED: UP closes vanes");
+      scheduleInitialPress(target, Direction::Up, "DAY->CLOSED: UP closes vanes");
       scheduleCompletion(target, desired, vaneMs);
     } else {
-      radio_.sendPress(mask, Direction::Down, "OPEN->CLOSED: DOWN drops blind");
+      scheduleInitialPress(target, Direction::Down, "OPEN->CLOSED: DOWN drops blind");
       scheduleCompletion(target, desired, travelMs);
     }
     break;
 
   case BlindState::Day:
     if (current == BlindState::Open) {
-      radio_.sendPress(mask, Direction::Down, "OPEN->DAY: first DOWN drops blind");
+      scheduleInitialPress(target, Direction::Down, "OPEN->DAY: first DOWN drops blind");
       schedulePress(target, Direction::Down, travelMs, "OPEN->DAY: second DOWN sets DAY");
       scheduleCompletion(target, desired, travelMs);
     } else {
-      radio_.sendPress(mask, Direction::Down, "CLOSED->DAY: DOWN sets DAY");
+      scheduleInitialPress(target, Direction::Down, "CLOSED->DAY: DOWN sets DAY");
       scheduleCompletion(target, desired, vaneMs);
     }
     break;

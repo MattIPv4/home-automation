@@ -24,7 +24,7 @@ void setup() {
   Serial.println(F("\nESP32 Blind Controller Booting..."));
 
   if (!radio.begin()) {
-    Serial.println(F("[ERR] nRF24L01+ hardware failed to initialize!"));
+    Serial.println(F("[ERR] Radio hardware or transmitter task failed to initialize!"));
     while (true) {
       digitalWrite(Config::STATUS_LED_PIN, !digitalRead(Config::STATUS_LED_PIN));
       delay(250);
@@ -41,4 +41,6 @@ void loop() {
   controller.update();
   radio.poll();
   commands.poll();
+  // Let core 0's idle task run, including when Wi-Fi is disabled. RF runs on core 1.
+  delay(1);
 }
