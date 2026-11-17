@@ -9,6 +9,8 @@ public:
   BlindController(BlindRadio& radio, const TimingSettings& timing);
 
   void setState(uint8_t target, BlindState state);
+  // Includes queued destinations; target 0 is UNKNOWN unless all individuals agree.
+  BlindState getState(uint8_t target) const;
   void resetState(uint8_t target);
   void update();
   void printStatus() const;

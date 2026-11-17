@@ -2,8 +2,10 @@
 
 #include <Arduino.h>
 
-// Copy this file to Secrets.h and set the remote ID discovered using "sniff".
-// Secrets.h is Git-ignored; keep device-specific values and future Wi-Fi credentials there.
+// Copy this file to Secrets.h, set your Wi-Fi credentials and the ID discovered using "sniff".
+// Secrets.h is Git-ignored. An empty SSID disables Wi-Fi/Alexa but leaves serial/RF working.
 namespace Secrets {
+constexpr char WIFI_SSID[] = "";
+constexpr char WIFI_PASS[] = "";
 constexpr uint8_t REMOTE_ID[] = {0x00, 0x00, 0x00};
 }

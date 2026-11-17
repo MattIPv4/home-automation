@@ -21,6 +21,36 @@ const char* stateName(BlindState state) {
 BlindController::BlindController(BlindRadio& radio, const TimingSettings& timing)
     : radio_(radio), timing_(timing) {}
 
+BlindState BlindController::getState(uint8_t target) const {
+  if (target >= Config::TARGET_COUNT) {
+    Serial.println(F("[ERR] Target index must be 0 (All) or 1-4."));
+    return BlindState::Unknown;
+  }
+
+  if (target != 0) {
+    if (targets_[0].queued != BlindState::None) {
+      return targets_[0].queued;
+    }
+
+    const TargetState& state = targets_[target];
+    if (state.queued != BlindState::None) {
+      return state.queued;
+    }
+    if (state.pending != BlindState::None) {
+      return state.pending;
+    }
+    return state.confirmed;
+  }
+
+  const BlindState state = getState(1);
+  for (size_t i = 2; i < Config::TARGET_COUNT; i++) {
+    if (getState(i) != state) {
+      return BlindState::Unknown;
+    }
+  }
+  return state;
+}
+
 bool BlindController::anyMoveInProgress() const {
   for (const TargetState& target : targets_) {
     if (target.moving) {

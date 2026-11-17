@@ -1,14 +1,17 @@
 #include <Arduino.h>
 
+#include "AlexaController.h"
 #include "BlindController.h"
 #include "BlindRadio.h"
 #include "Config.h"
+#include "Secrets.h"
 #include "SerialCommands.h"
 
 namespace {
 TimingSettings timing;
 BlindRadio radio(timing);
 BlindController controller(radio, timing);
+AlexaController alexa(controller);
 SerialCommands commands(controller, radio, timing);
 }
 
@@ -30,9 +33,11 @@ void setup() {
 
   Serial.println(F("[OK] nRF24L01+ initialized."));
   commands.printHelp();
+  alexa.begin(Secrets::WIFI_SSID, Secrets::WIFI_PASS);
 }
 
 void loop() {
+  alexa.update();
   controller.update();
   radio.poll();
   commands.poll();
