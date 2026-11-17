@@ -1,7 +1,22 @@
 #include "SerialCommands.h"
 
+#include "MatterController.h"
+
 namespace {
-enum class CommandType { Open, Close, Day, Reset, Status, Sniff, Help, Time, Hold, Raw, Unknown };
+enum class CommandType {
+  Pair,
+  Open,
+  Close,
+  Day,
+  Reset,
+  Status,
+  Sniff,
+  Help,
+  Time,
+  Hold,
+  Raw,
+  Unknown
+};
 
 struct CommandName {
   const char* name;
@@ -9,11 +24,11 @@ struct CommandName {
 };
 
 constexpr CommandName COMMAND_NAMES[] = {
-    {"o", CommandType::Open},      {"O", CommandType::Open},        {"c", CommandType::Close},
-    {"C", CommandType::Close},     {"d", CommandType::Day},         {"D", CommandType::Day},
-    {"reset", CommandType::Reset}, {"status", CommandType::Status}, {"sniff", CommandType::Sniff},
-    {"time", CommandType::Time},   {"hold", CommandType::Hold},     {"h", CommandType::Help},
-    {"?", CommandType::Help},
+    {"pair", CommandType::Pair},   {"o", CommandType::Open},      {"O", CommandType::Open},
+    {"c", CommandType::Close},     {"C", CommandType::Close},     {"d", CommandType::Day},
+    {"D", CommandType::Day},       {"reset", CommandType::Reset}, {"status", CommandType::Status},
+    {"sniff", CommandType::Sniff}, {"time", CommandType::Time},   {"hold", CommandType::Hold},
+    {"h", CommandType::Help},      {"?", CommandType::Help},
 };
 
 CommandType parseCommand(const String& name) {
@@ -35,14 +50,16 @@ bool hasArgumentCount(size_t count, size_t minimum, size_t maximum) {
   Serial.println(F("[ERR] Incorrect number of arguments. Type 'h' for help."));
   return false;
 }
+
 }
 
 SerialCommands::SerialCommands(BlindController& controller, BlindRadio& radio,
-                               TimingSettings& timing)
-    : controller_(controller), radio_(radio), timing_(timing) {}
+                               TimingSettings& timing, MatterController& matter)
+    : controller_(controller), radio_(radio), timing_(timing), matter_(matter) {}
 
 void SerialCommands::printHelp() const {
   Serial.println(F("\n=== Blind Controller Commands ==="));
+  Serial.println(F("  pair               - Clear all Matter pairings and pair again (no reboot)"));
   Serial.println(F("  o [0-4]            - Move to OPEN    (0/omitted = All [0xFF])"));
   Serial.println(F("  c [0-4]            - Move to CLOSED  (0/omitted = All [0xFF])"));
   Serial.println(F("  d [0-4]            - Move to DAY     (0/omitted = All [0xFF])"));
@@ -93,6 +110,13 @@ void SerialCommands::poll() {
   const CommandType type = parseCommand(name);
 
   switch (type) {
+  case CommandType::Pair:
+    if (!hasArgumentCount(argumentCount, 0, 0)) {
+      return;
+    }
+    matter_.pair();
+    break;
+
   case CommandType::Open:
   case CommandType::Close:
   case CommandType::Day:

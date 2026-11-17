@@ -1,18 +1,20 @@
 #include <Arduino.h>
 
-#include "AlexaController.h"
 #include "BlindController.h"
 #include "BlindRadio.h"
 #include "Config.h"
+#include "MatterController.h"
 #include "Secrets.h"
 #include "SerialCommands.h"
+#include "WiFiController.h"
 
 namespace {
 TimingSettings timing;
 BlindRadio radio(timing);
 BlindController controller(radio, timing);
-AlexaController alexa(controller);
-SerialCommands commands(controller, radio, timing);
+WiFiController wifi;
+MatterController matter(controller);
+SerialCommands commands(controller, radio, timing, matter);
 }
 
 void setup() {
@@ -33,12 +35,13 @@ void setup() {
 
   Serial.println(F("[OK] nRF24L01+ initialized."));
   commands.printHelp();
-  alexa.begin(Secrets::WIFI_SSID, Secrets::WIFI_PASS);
+  wifi.begin(Secrets::WIFI_SSID, Secrets::WIFI_PASS);
 }
 
 void loop() {
-  alexa.update();
+  wifi.update();
   controller.update();
+  matter.update();
   radio.poll();
   commands.poll();
   // Let core 0's idle task run, including when Wi-Fi is disabled. RF runs on core 1.
