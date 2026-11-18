@@ -2,6 +2,7 @@
 
 #include "BlindController.h"
 #include "BlindRadio.h"
+#include "BootDiagnostics.h"
 #include "Config.h"
 #include "MatterController.h"
 #include "Secrets.h"
@@ -19,23 +20,27 @@ SerialCommands commands(controller, radio, timing, matter);
 
 void setup() {
   pinMode(Config::STATUS_LED_PIN, OUTPUT);
-  digitalWrite(Config::STATUS_LED_PIN, LOW);
+  digitalWrite(Config::STATUS_LED_PIN, HIGH);
 
   Serial.begin(Config::SERIAL_BAUD_RATE);
   delay(500);
   Serial.println(F("\nESP32 Blind Controller Booting..."));
+  BootDiagnostics::printResetReason();
+
+  if (!BootDiagnostics::checkRam()) {
+    BootDiagnostics::halt();
+  }
+  Serial.println(F("[BOOT] Boot RAM check passed."));
 
   if (!radio.begin()) {
     Serial.println(F("[ERR] Radio hardware or transmitter task failed to initialize!"));
-    while (true) {
-      digitalWrite(Config::STATUS_LED_PIN, !digitalRead(Config::STATUS_LED_PIN));
-      delay(250);
-    }
+    BootDiagnostics::halt();
   }
+  Serial.println(F("[BOOT] nRF24L01+ initialized."));
 
-  Serial.println(F("[OK] nRF24L01+ initialized."));
   commands.printHelp();
   wifi.begin(Secrets::WIFI_SSID, Secrets::WIFI_PASS);
+  digitalWrite(Config::STATUS_LED_PIN, LOW);
 }
 
 void loop() {
